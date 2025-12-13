@@ -1,0 +1,8 @@
+{
+  "label": "Module 4: AI Planning",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "AI planning systems and LLM-to-action pipelines for autonomous robotics."
+  }
+}

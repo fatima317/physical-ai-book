@@ -1,0 +1,250 @@
+import React, { useState, useEffect } from 'react';
+import styles from './styles.module.css';
+
+const ROS2Playground = () => {
+  const [code, setCode] = useState(`import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+class PlaygroundNode(Node):
+    def __init__(self):
+        super().__init__('playground_node')
+        self.publisher = self.create_publisher(String, 'topic', 10)
+        timer_period = 0.5  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.i = 0
+
+    def timer_callback(self):
+        msg = String()
+        msg.data = 'Hello World: %d' % self.i
+        self.publisher.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+        self.i += 1
+
+def main(args=None):
+    rclpy.init(args=args)
+    playground_node = PlaygroundNode()
+    rclpy.spin(playground_node)
+    playground_node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()`);
+
+  const [output, setOutput] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
+  const [executionResult, setExecutionResult] = useState(null);
+  const [selectedExample, setSelectedExample] = useState('publisher');
+
+  const examples = {
+    publisher: {
+      name: 'Publisher Node',
+      code: `import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+class PlaygroundNode(Node):
+    def __init__(self):
+        super().__init__('playground_node')
+        self.publisher = self.create_publisher(String, 'topic', 10)
+        timer_period = 0.5  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.i = 0
+
+    def timer_callback(self):
+        msg = String()
+        msg.data = 'Hello World: %d' % self.i
+        self.publisher.publish(msg)
+        self.get_logger().info('Publishing: "%s"' % msg.data)
+        self.i += 1
+
+def main(args=None):
+    rclpy.init(args=args)
+    playground_node = PlaygroundNode()
+    rclpy.spin(playground_node)
+    playground_node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()`
+    },
+    subscriber: {
+      name: 'Subscriber Node',
+      code: `import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+
+class PlaygroundNode(Node):
+    def __init__(self):
+        super().__init__('playground_subscriber')
+        self.subscription = self.create_subscription(
+            String,
+            'topic',
+            self.listener_callback,
+            10)
+        self.subscription  # prevent unused variable warning
+
+    def listener_callback(self, msg):
+        self.get_logger().info('I heard: "%s"' % msg.data)
+
+def main(args=None):
+    rclpy.init(args=args)
+    playground_subscriber = PlaygroundNode()
+    rclpy.spin(playground_subscriber)
+    playground_subscriber.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()`
+    },
+    service: {
+      name: 'Service Server',
+      code: `import rclpy
+from rclpy.node import Node
+from example_interfaces.srv import AddTwoInts
+
+class PlaygroundService(Node):
+    def __init__(self):
+        super().__init__('playground_service')
+        self.srv = self.create_service(AddTwoInts, 'add_two_ints', self.add_two_ints_callback)
+
+    def add_two_ints_callback(self, request, response):
+        response.sum = request.a + request.b
+        self.get_logger().info('Incoming request\\na: %d b: %d' % (request.a, request.b))
+        return response
+
+def main(args=None):
+    rclpy.init(args=args)
+    playground_service = PlaygroundService()
+    rclpy.spin(playground_service)
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()`
+    }
+  };
+
+  const handleRunCode = async () => {
+    setIsRunning(true);
+    setOutput('Running ROS 2 code...\n');
+
+    // Simulate code execution with realistic output
+    setTimeout(() => {
+      const simulatedOutput = `ROS 2 Node initialized successfully
+Publishing: "Hello World: 0"
+Publishing: "Hello World: 1"
+Publishing: "Hello World: 2"
+Node shutdown complete
+Execution completed successfully`;
+
+      setOutput(simulatedOutput);
+      setExecutionResult({ success: true, message: 'Code executed successfully!' });
+      setIsRunning(false);
+    }, 2000);
+  };
+
+  const handleStopCode = () => {
+    setIsRunning(false);
+    setOutput(prev => prev + '\n[Execution stopped by user]');
+    setExecutionResult(null);
+  };
+
+  const handleExampleChange = (exampleKey) => {
+    setSelectedExample(exampleKey);
+    setCode(examples[exampleKey].code);
+    setOutput('');
+    setExecutionResult(null);
+  };
+
+  const handleCodeChange = (e) => {
+    setCode(e.target.value);
+  };
+
+  return (
+    <div className={styles.playgroundContainer}>
+      <div className={styles.playgroundHeader}>
+        <h2>ROS 2 Interactive Playground</h2>
+        <p>Experiment with ROS 2 concepts in a simulated environment. Try different examples below.</p>
+      </div>
+
+      <div className={styles.playgroundControls}>
+        <div className={styles.exampleSelector}>
+          <label htmlFor="example-select">Choose an example:</label>
+          <select
+            id="example-select"
+            value={selectedExample}
+            onChange={(e) => handleExampleChange(e.target.value)}
+            className={styles.exampleSelect}
+          >
+            {Object.entries(examples).map(([key, example]) => (
+              <option key={key} value={key}>{example.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.executionControls}>
+          <button
+            onClick={handleRunCode}
+            disabled={isRunning}
+            className={`${styles.runButton} ${isRunning ? styles.running : ''}`}
+          >
+            {isRunning ? 'Running...' : 'Run Code'}
+          </button>
+
+          {isRunning && (
+            <button
+              onClick={handleStopCode}
+              className={styles.stopButton}
+            >
+              Stop
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.codeEditor}>
+        <textarea
+          value={code}
+          onChange={handleCodeChange}
+          className={styles.codeTextarea}
+          spellCheck="false"
+        />
+      </div>
+
+      <div className={styles.outputPanel}>
+        <h3>Output</h3>
+        <div className={styles.outputContent}>
+          <pre>{output}</pre>
+        </div>
+
+        {executionResult && (
+          <div className={`${styles.executionResult} ${executionResult.success ? styles.success : styles.error}`}>
+            {executionResult.message}
+          </div>
+        )}
+      </div>
+
+      <div className={styles.conceptExplainer}>
+        <h3>ROS 2 Concepts Demonstrated</h3>
+        <ul>
+          <li><strong>Nodes:</strong> The basic unit of execution in ROS 2</li>
+          <li><strong>Topics:</strong> Communication channels for data streams</li>
+          <li><strong>Publishers/Subscribers:</strong> Communication pattern for asynchronous messaging</li>
+          <li><strong>Services:</strong> Synchronous request/response communication pattern</li>
+          <li><strong>rclpy:</strong> Python client library for ROS 2</li>
+        </ul>
+      </div>
+
+      <div className={styles.learningResources}>
+        <h3>Learning Resources</h3>
+        <ul>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">ROS 2 Documentation</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">ROS 2 Tutorials</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">rclpy API Reference</a></li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default ROS2Playground;

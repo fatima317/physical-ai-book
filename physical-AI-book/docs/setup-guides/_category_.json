@@ -1,0 +1,8 @@
+{
+  "label": "Setup Guides",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Hardware and software setup guides for Physical AI development"
+  }
+}

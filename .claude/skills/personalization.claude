@@ -1,0 +1,89 @@
+# Personalization Skill
+
+This skill provides comprehensive personalization workflows for the Physical AI & Humanoid Robotics book. It adapts content, examples, and learning paths based on individual user profiles, skill levels, and learning preferences.
+
+## Purpose
+- Customize content based on user skill level and learning preferences
+- Adapt learning paths to individual needs and progress
+- Implement adaptive difficulty adjustment based on performance
+- Provide personalized examples and exercises
+- Optimize educational outcomes through tailored content delivery
+
+## Core Components
+
+### User Profile Analysis
+- Skill level assessment (beginner, intermediate, advanced)
+- Learning style preferences (visual, auditory, kinesthetic)
+- Domain knowledge background
+- Progress tracking and performance metrics
+- Preferred difficulty and pacing
+
+### Content Adaptation Strategies
+- Complexity adjustment based on skill level
+- Example selection matching user interests
+- Exercise difficulty scaling
+- Explanation depth customization
+- Resource recommendation based on progress
+
+### Adaptive Learning Path Generation
+- Prerequisite identification and sequencing
+- Alternative learning pathways for different styles
+- Dynamic content reordering based on performance
+- Gap identification and remediation
+- Advanced topic recommendation for proficient users
+
+## Personalization Techniques
+
+### For Different Skill Levels
+- **Beginner**:
+  - Detailed explanations with step-by-step guidance
+  - Simple, concrete examples
+  - More visual aids and diagrams
+  - Frequent knowledge checks
+  - Additional foundational content
+
+- **Intermediate**:
+  - Balanced approach with practical applications
+  - Moderate complexity examples
+  - Theoretical concepts with practical relevance
+  - Challenging exercises with hints
+  - Connection to advanced topics
+
+- **Advanced**:
+  - Concise explanations focusing on implementation
+  - Complex, real-world examples
+  - Advanced concepts and optimization techniques
+  - Open-ended challenges
+  - Research and extension activities
+
+### Content Customization
+- Example modification to match user interests
+- Exercise difficulty adjustment based on performance
+- Explanation style adaptation (theoretical vs practical)
+- Code example complexity scaling
+- Resource recommendation personalization
+
+### Progress-Based Adaptation
+- Performance tracking and analysis
+- Knowledge gap identification
+- Confidence-based content adjustment
+- Remedial content delivery when needed
+- Acceleration for proficient learners
+
+## Integration Points
+- User profile service for preference retrieval
+- Learning module service for content adaptation
+- Progress tracking service for performance analysis
+- Translation service for multilingual personalization
+- Interactive MDX components for dynamic content
+- Validation service for content quality assurance
+
+## Quality Assurance
+- Maintain educational effectiveness across all adaptations
+- Ensure technical accuracy is preserved in personalized content
+- Verify hardware compatibility is maintained
+- Preserve learning objectives in all personalized versions
+- Validate that personalization algorithms are fair and unbiased
+
+## Usage Instructions
+Apply this skill to analyze user profiles and generate personalized learning experiences. Use the techniques and strategies outlined above to create adaptive content that meets individual learning needs while maintaining educational quality and technical accuracy.

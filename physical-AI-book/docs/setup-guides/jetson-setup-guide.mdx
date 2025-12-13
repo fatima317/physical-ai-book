@@ -1,0 +1,235 @@
+---
+title: Jetson NX Hardware Setup Guide
+description: Complete setup guide for NVIDIA Jetson NX development platform
+tags: [jetson, hardware, setup, nx, nvidia]
+sidebar_position: 2
+---
+
+import PersonalizeChapter from '@site/src/components/PersonalizeChapter';
+import TranslateToUrdu from '@site/src/components/TranslateToUrdu';
+import HardwareConfiguration from '@site/src/models/hardware-configuration.js';
+
+# Jetson NX Hardware Setup Guide
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="beginner">
+
+<TranslateToUrdu>
+
+This guide will walk you through setting up your NVIDIA Jetson NX development platform for robotics applications. The Jetson NX is a powerful AI computer that enables you to run multiple neural networks in parallel for robotics perception and control.
+
+</TranslateToUrdu>
+
+</PersonalizeChapter>
+
+## Prerequisites
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="beginner">
+
+Before starting the setup, ensure you have the following:
+
+- **NVIDIA Jetson AGX Xavier or Jetson NX Development Kit**
+- **Power adapter** (official 19V/6.32A for NX)
+- **MicroSD card** (at least 32GB UHS-I)
+- **USB-C cable** for initial setup
+- **Ethernet cable** (for initial internet connection)
+- **Computer** with Ubuntu 18.04 or later for flashing
+
+</PersonalizeChapter>
+
+## Hardware Components
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="beginner">
+
+<TranslateToUrdu>
+
+The Jetson NX development kit includes:
+
+- Jetson NX module with 6-core NVIDIA Carmel ARM v8.2 64-bit CPU
+- 384-core NVIDIA Volta GPU with Tensor Cores
+- 64-bit LPDDR4x memory (16GB or 8GB)
+- Storage: 32GB eMMC 5.1
+- Multiple connectivity options: Wi-Fi, Bluetooth, Ethernet, USB 3.2, USB 2.0, PCIe
+- Video: 2x micro HDMI ports, MIPI CSI-2 camera connectors
+
+</TranslateToUrdu>
+
+</PersonalizeChapter>
+
+### Required Sensors and Actuators
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="beginner">
+
+For robotics applications, you may need additional components:
+
+- **Camera**: Raspberry Pi Camera Module or compatible MIPI CSI-2 camera
+- **IMU**: Inertial Measurement Unit for orientation sensing
+- **LIDAR**: For environment mapping and navigation
+- **Motor Controllers**: For driving wheels or other actuators
+- **Power Distribution Board**: To manage power for multiple components
+
+</PersonalizeChapter>
+
+## Initial Setup Process
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="beginner">
+
+<TranslateToUrdu>
+
+### Step 1: Physical Setup
+
+1. Carefully remove the Jetson NX from its anti-static bag
+2. Connect the power adapter to the barrel jack (not USB-C for power)
+3. Connect an Ethernet cable for initial internet access
+4. Connect a monitor via HDMI or eDP adapter
+5. Connect a keyboard and mouse via USB
+
+### Step 2: First Boot
+
+1. Power on the device using the power button
+2. Wait for the initial boot sequence to complete
+3. Follow the on-screen setup wizard
+4. Connect to your Wi-Fi network
+5. Create your user account
+
+</TranslateToUrdu>
+
+</PersonalizeChapter>
+
+## Software Installation
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="intermediate">
+
+### Installing JetPack SDK
+
+The JetPack SDK includes all the tools needed for development:
+
+```bash
+# Download JetPack from NVIDIA Developer website
+# Follow the installation wizard to install:
+# - L4T (Linux for Tegra)
+# - CUDA
+# - cuDNN
+# - TensorRT
+# - OpenCV
+# - VPI (Vision Programming Interface)
+# - Isaac ROS packages
+```
+
+### Setting up ROS 2 Humble
+
+```bash
+# Add ROS 2 apt repository
+sudo apt update && sudo apt install -y curl gnupg lsb-release
+curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo apt-key add -
+echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+# Install ROS 2 Humble packages
+sudo apt update
+sudo apt install -y ros-humble-ros-base
+sudo apt install -y python3-rosdep2 python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+```
+
+</PersonalizeChapter>
+
+## Configuration for Robotics
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="intermediate">
+
+### Performance Mode Configuration
+
+```bash
+# Set Jetson to maximum performance mode
+sudo nvpmodel -m 0
+sudo jetson_clocks
+```
+
+### Camera Setup
+
+```bash
+# Install camera support packages
+sudo apt install -y v4l-utils
+v4l2-ctl --list-devices  # Check available cameras
+```
+
+### GPIO and PWM Configuration
+
+```bash
+# Install GPIO support
+sudo apt install -y python3-periphery
+# GPIO access through python-periphery library
+```
+
+</PersonalizeChapter>
+
+## Hardware Validation
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="intermediate">
+
+### System Information Check
+
+```bash
+# Check Jetson model and configuration
+sudo /opt/nvidia/jetson-io/configure_jetson.sh --query
+
+# Check thermal status
+sudo tegrastats
+
+# Check available memory and GPU status
+sudo jetson_release -v
+```
+
+### Basic Functionality Tests
+
+```bash
+# Test camera functionality
+libcamera-hello --timeout 5000
+
+# Check network connectivity
+ping -c 3 google.com
+
+# Verify GPU acceleration
+deviceQuery  # From CUDA samples
+```
+
+</PersonalizeChapter>
+
+## Troubleshooting
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="beginner">
+
+<TranslateToUrdu>
+
+### Common Issues and Solutions:
+
+1. **Device won't boot**: Ensure you're using the barrel jack for power, not USB-C
+2. **Overheating**: Check that the heatsink is properly attached and consider active cooling
+3. **Camera not detected**: Verify MIPI CSI-2 connections are secure
+4. **USB devices not recognized**: Check power requirements and hub configuration
+5. **Network connectivity issues**: Try different cables or ports
+
+</TranslateToUrdu>
+
+</PersonalizeChapter>
+
+## Next Steps
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="beginner">
+
+After completing the hardware setup, proceed to:
+
+1. [ROS 2 Fundamentals](../module-1-ros/ros-basics.mdx) - Learn ROS 2 concepts
+2. [Simulation Environment Setup](../module-2-simulation/gazebo-setup.mdx) - Set up Gazebo simulation
+3. [Basic Robot Control](../module-3-perception/basic-control.mdx) - Control a simulated robot
+
+</PersonalizeChapter>
+
+## Resources
+
+<PersonalizeChapter skillLevel="intermediate" userSkillLevel="intermediate">
+
+- [NVIDIA Jetson Documentation](https://docs.nvidia.com/jetson/)
+- [JetPack Installation Guide](https://developer.nvidia.com/jetpack-sdk-461)
+- [ROS 2 on Jetson](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html)
+- [Jetson Hardware User Guide](https://developer.nvidia.com/embedded/jetson-nx-developer-kit)
+
+</PersonalizeChapter>

@@ -1,0 +1,107 @@
+{
+  "timestamp": "2025-12-10T20:31:28.067Z",
+  "totalTests": 4,
+  "passedTests": 1,
+  "failedTests": 3,
+  "passRate": 25,
+  "averageScore": 17.5,
+  "summary": {
+    "jetsonSpecificIssues": 0,
+    "arm64CompatibilityIssues": 1,
+    "memoryIssues": 0
+  },
+  "detailedResults": [
+    {
+      "code": "print(\"Hello Jetson NX!\")...",
+      "language": "python",
+      "metadata": {
+        "category": "basic",
+        "complexity": "low"
+      },
+      "execution": {
+        "language": "python",
+        "passed": true,
+        "errors": [],
+        "warnings": [],
+        "output": "Hello Jetson NX!\n",
+        "executionTime": 75
+      },
+      "jetsonSpecificIssues": [],
+      "arm64CompatibilityIssues": [],
+      "memoryIssues": [],
+      "overallScore": 70,
+      "passed": true
+    },
+    {
+      "code": "\nimport numpy as np\na = np.random.random((1000, 1000))\nb = np.random.random((1000, 1000))\nc = np.dot...",
+      "language": "python",
+      "metadata": {
+        "category": "math",
+        "complexity": "medium"
+      },
+      "execution": {
+        "language": "python",
+        "passed": false,
+        "errors": [
+          "Traceback (most recent call last):\n  File \"/tmp/jetson_test_1765398687043.py\", line 2, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n"
+        ],
+        "warnings": [],
+        "output": "",
+        "executionTime": 494
+      },
+      "jetsonSpecificIssues": [],
+      "arm64CompatibilityIssues": [],
+      "memoryIssues": [],
+      "overallScore": 0,
+      "passed": false
+    },
+    {
+      "code": "\nimport cv2\nimport numpy as np\n\n# Create a simple image\nimg = np.zeros((480, 640, 3), dtype=np.uint8...",
+      "language": "python",
+      "metadata": {
+        "category": "vision",
+        "complexity": "medium"
+      },
+      "execution": {
+        "language": "python",
+        "passed": false,
+        "errors": [
+          "Traceback (most recent call last):\n  File \"/tmp/jetson_test_1765398687537.py\", line 2, in <module>\n    import cv2\nModuleNotFoundError: No module named 'cv2'\n"
+        ],
+        "warnings": [],
+        "output": "",
+        "executionTime": 263
+      },
+      "jetsonSpecificIssues": [],
+      "arm64CompatibilityIssues": [],
+      "memoryIssues": [],
+      "overallScore": 0,
+      "passed": false
+    },
+    {
+      "code": "\n#ifdef __x86_64__\n  print(\"This is x86_64 specific code\")\n#else\n  print(\"This is ARM64 compatible c...",
+      "language": "python",
+      "metadata": {
+        "category": "compatibility",
+        "complexity": "low"
+      },
+      "execution": {
+        "language": "python",
+        "passed": false,
+        "errors": [
+          "  File \"/tmp/jetson_test_1765398687801.py\", line 3\n    print(\"This is x86_64 specific code\")\nIndentationError: unexpected indent\n"
+        ],
+        "warnings": [],
+        "output": "",
+        "executionTime": 265
+      },
+      "jetsonSpecificIssues": [],
+      "arm64CompatibilityIssues": [
+        "x86_64 specific code detected - not compatible with ARM64 Jetson"
+      ],
+      "memoryIssues": [],
+      "overallScore": 0,
+      "passed": false
+    }
+  ]
+}

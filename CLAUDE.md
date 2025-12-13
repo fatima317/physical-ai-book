@@ -208,3 +208,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Python 3.11 (ROS 2 Humble), JavaScript/TypeScript (MDX processing), C++ (ROS 2 nodes) + ROS 2 Humble, Gazebo Garden, Isaac Sim, Node.js, MDX, Docker (001-physical-ai-book)
+- File-based (modules, documentation, configuration) (001-physical-ai-book)
+
+## Recent Changes
+- 001-physical-ai-book: Added Python 3.11 (ROS 2 Humble), JavaScript/TypeScript (MDX processing), C++ (ROS 2 nodes) + ROS 2 Humble, Gazebo Garden, Isaac Sim, Node.js, MDX, Docker

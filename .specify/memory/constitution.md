@@ -1,55 +1,63 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- SYNC IMPACT REPORT
+Version change: 1.0.0 → 1.0.0 (initial creation)
+Modified principles: None (new document)
+Added sections: All sections added
+Removed sections: None
+Templates requiring updates:
+  - .specify/templates/plan-template.md ✅ updated
+  - .specify/templates/spec-template.md ✅ updated
+  - .specify/templates/tasks-template.md ✅ updated
+  - .specify/templates/commands/*.md ⚠ pending
+  - README.md ⚠ pending
+Follow-up TODOs: None
+-->
+
+# Physical AI & Humanoid Robotics Book Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### Educational Excellence
+Content must be structured to guide learners from beginner to advanced levels in humanoid robotics. All materials must include progressive examples, hands-on exercises, and clear learning objectives with measurable outcomes. Rationale: Ensures accessibility and effectiveness for diverse skill levels.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### Hardware/Software Standardization
+All implementations must target Jetson NX hardware and utilize ROS 2 Humble, Gazebo, and Isaac Sim for simulation environments. Code examples and tutorials must be validated on this specific stack. Rationale: Maintains consistency and reproducibility across all learning materials.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### Interactive Personalization
+All content must incorporate personalization features allowing users to customize their learning path. Systems must support adaptive difficulty, preferred learning styles, and individual progress tracking. Rationale: Enhances engagement and learning outcomes for individual students.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Multilingual Accessibility
+All educational content must be available in English and Urdu with professional-quality translations. Translation systems must maintain technical accuracy and cultural relevance. Rationale: Ensures global accessibility and inclusivity for diverse student populations.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### Technical Verification
+All code examples, simulations, and implementations must be verified through multiple authoritative sources. Documentation must include traceable citations to academic papers, official documentation, or industry standards. Rationale: Maintains technical accuracy and credibility of educational content.
 
-### [PRINCIPLE_6_NAME]
+### Reproducible Code Quality
+All code samples must be complete, tested, and reproducible in the specified environment. Code must include proper documentation, error handling, and follow established best practices for robotics development. Rationale: Ensures students can successfully replicate and build upon examples.
 
+## Interactive Features and Tools
 
-[PRINCIPLE__DESCRIPTION]
+### Subagent Integration
+The book must leverage AI subagents for personalized tutoring, code review, and simulation assistance. Subagents must be designed to progressively challenge students based on their demonstrated competency. All AI interactions must be transparent and explainable to students.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### Skill-Based Learning Modules
+Educational content must be organized into discrete, testable skill modules. Each module must include clear prerequisites, learning objectives, practical exercises, and assessment criteria. Students must demonstrate mastery before advancing to subsequent modules.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Simulation and Real-World Alignment
+All simulation examples in Gazebo and Isaac Sim must correspond to real-world humanoid robot behaviors. Students must be able to transfer learned concepts from simulation to physical hardware with minimal adaptation required.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Standards
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Source Verification Requirements
+All technical claims, code examples, and methodologies must be supported by authoritative sources. Citations must include links to official documentation, peer-reviewed papers, or industry-standard resources. Unverified content must be clearly marked as experimental or theoretical.
+
+### Code Quality and Testing
+All code examples must include unit tests, integration tests where applicable, and documentation for setup and execution. Code must follow ROS 2 coding standards and include proper error handling, logging, and safety considerations for robotic systems.
+
+### Reproducibility Standards
+Every tutorial and example must include complete setup instructions, dependency specifications, and expected output. Docker containers or similar technologies must be provided to ensure consistent execution environments across different student setups.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+All contributions to the Physical AI & Humanoid Robotics book project must comply with these constitutional principles. Changes to this constitution require formal review by subject matter experts in robotics education and approval by the project steering committee. All content must undergo technical review by certified robotics professionals before publication. Code examples and simulations must be validated on the target hardware platform (Jetson NX) to ensure accuracy and reproducibility.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-12-10 | **Last Amended**: 2025-12-10

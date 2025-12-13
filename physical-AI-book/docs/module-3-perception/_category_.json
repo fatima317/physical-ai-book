@@ -1,0 +1,8 @@
+{
+  "label": "Module 3: Perception",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Perception systems using ROS 2 and Isaac Sim for robotics applications."
+  }
+}

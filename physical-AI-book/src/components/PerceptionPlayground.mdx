@@ -1,0 +1,341 @@
+import React, { useState } from 'react';
+import styles from './styles.module.css';
+
+const PerceptionPlayground = () => {
+  const [code, setCode] = useState(`import cv2
+import numpy as np
+from PIL import Image
+import matplotlib.pyplot as plt
+
+def simulate_perception_pipeline(image_path):
+    """
+    Simulates a basic perception pipeline with object detection
+    """
+    # Load image
+    image = cv2.imread(image_path) if image_path else np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8)
+
+    # Convert BGR to RGB for display
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Simple color-based object detection (for simulation)
+    hsv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2HSV)
+
+    # Define range for red color (in HSV)
+    lower_red = np.array([0, 50, 50])
+    upper_red = np.array([10, 255, 255])
+    mask1 = cv2.inRange(hsv, lower_red, upper_red)
+
+    # Upper red range
+    lower_red = np.array([170, 50, 50])
+    upper_red = np.array([180, 255, 255])
+    mask2 = cv2.inRange(hsv, lower_red, upper_red)
+
+    # Combine masks
+    mask = mask1 + mask2
+
+    # Find contours
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Draw bounding boxes
+    result_image = image_rgb.copy()
+    detections = []
+
+    for contour in contours:
+        if cv2.contourArea(contour) > 100:  # Filter small contours
+            x, y, w, h = cv2.boundingRect(contour)
+            cv2.rectangle(result_image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            detections.append({
+                "class": "red_object",
+                "confidence": 0.85,
+                "bbox": [x, y, x+w, y+h]
+            })
+
+    return {
+        "original_image": image_rgb,
+        "result_image": result_image,
+        "detections": detections,
+        "status": "Perception pipeline executed successfully"
+    }
+
+# Example usage
+result = simulate_perception_pipeline(None)
+print(f"Found {len(result['detections'])} objects")
+for i, detection in enumerate(result['detections']):
+    print(f"Detection {i+1}: {detection['class']} with confidence {detection['confidence']:.2f}")`);
+
+  const [output, setOutput] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
+  const [executionResult, setExecutionResult] = useState(null);
+  const [selectedExample, setSelectedExample] = useState('object_detection');
+
+  const examples = {
+    object_detection: {
+      name: 'Object Detection',
+      code: `import cv2
+import numpy as np
+
+def simulate_object_detection(image_path=None):
+    """
+    Simulates object detection pipeline
+    """
+    # Create or load image
+    image = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8) if not image_path else cv2.imread(image_path)
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Simulate object detection
+    # In a real implementation, this would use a model like YOLO or SSD
+    detections = [
+        {"class": "person", "confidence": 0.92, "bbox": [100, 150, 200, 300]},
+        {"class": "bottle", "confidence": 0.87, "bbox": [300, 200, 350, 350]},
+        {"class": "chair", "confidence": 0.78, "bbox": [50, 300, 250, 450]}
+    ]
+
+    # Draw bounding boxes
+    result_image = image_rgb.copy()
+    for detection in detections:
+        bbox = detection["bbox"]
+        cv2.rectangle(result_image, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 2)
+        cv2.putText(result_image, f"{detection['class']} {detection['confidence']:.2f}",
+                   (bbox[0], bbox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+    return {
+        "image": result_image,
+        "detections": detections,
+        "status": "Object detection completed"
+    }
+
+# Example usage
+result = simulate_object_detection()
+print(f"Detected {len(result['detections'])} objects:")
+for detection in result['detections']:
+    print(f" - {detection['class']}: {detection['confidence']:.2f}")`
+    },
+    semantic_segmentation: {
+      name: 'Semantic Segmentation',
+      code: `import numpy as np
+import cv2
+
+def simulate_semantic_segmentation(image_path=None):
+    """
+    Simulates semantic segmentation pipeline
+    """
+    # Create or load image
+    image = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8) if not image_path else cv2.imread(image_path)
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Simulate segmentation mask
+    # In reality, this would come from a segmentation model
+    height, width = image_rgb.shape[:2]
+    segmentation_mask = np.zeros((height, width), dtype=np.uint8)
+
+    # Simulate different segments
+    segmentation_mask[100:200, 100:200] = 1  # Person
+    segmentation_mask[250:400, 300:500] = 2  # Chair
+    segmentation_mask[50:150, 400:600] = 3   # Table
+
+    # Color map for visualization
+    color_map = np.array([
+        [0, 0, 0],      # Background
+        [255, 0, 0],    # Person (red)
+        [0, 255, 0],    # Chair (green)
+        [0, 0, 255]     # Table (blue)
+    ], dtype=np.uint8)
+
+    # Create segmented image
+    segmented_image = np.zeros_like(image_rgb)
+    for class_id in range(1, 4):  # Person, Chair, Table
+        mask = segmentation_mask == class_id
+        segmented_image[mask] = color_map[class_id]
+
+    # Blend with original
+    blended = cv2.addWeighted(image_rgb, 0.6, segmented_image, 0.4, 0)
+
+    return {
+        "original_image": image_rgb,
+        "segmented_image": segmented_image,
+        "blended_image": blended,
+        "mask": segmentation_mask,
+        "status": "Semantic segmentation completed"
+    }
+
+# Example usage
+result = simulate_semantic_segmentation()
+print("Semantic segmentation completed")
+print(f"Segmentation mask shape: {result['mask'].shape}")`
+    },
+    depth_estimation: {
+      name: 'Depth Estimation',
+      code: `import numpy as np
+import cv2
+
+def simulate_depth_estimation(image_path=None):
+    """
+    Simulates depth estimation pipeline
+    """
+    # Create or load image
+    image = np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8) if not image_path else cv2.imread(image_path)
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # Simulate depth map
+    # In reality, this would come from stereo vision, structured light, or learning-based method
+    height, width = image_rgb.shape[:2]
+    depth_map = np.zeros((height, width), dtype=np.float32)
+
+    # Create a simple depth pattern (objects closer to center, farther at edges)
+    center_x, center_y = width // 2, height // 2
+    for y in range(height):
+        for x in range(width):
+            distance_from_center = np.sqrt((x - center_x)**2 + (y - center_y)**2)
+            # Simulate depth: center = closest (1m), edges = farthest (10m)
+            depth_map[y, x] = 1.0 + (distance_from_center / np.sqrt(center_x**2 + center_y**2)) * 9.0
+
+    # Normalize for visualization (0-255)
+    depth_visual = ((depth_map - depth_map.min()) / (depth_map.max() - depth_map.min()) * 255).astype(np.uint8)
+
+    # Apply colormap for better visualization
+    depth_colormap = cv2.applyColorMap(depth_visual, cv2.COLORMAP_JET)
+
+    return {
+        "original_image": image_rgb,
+        "depth_map": depth_map,
+        "depth_visualization": depth_colormap,
+        "status": "Depth estimation completed"
+    }
+
+# Example usage
+result = simulate_depth_estimation()
+print("Depth estimation completed")
+print(f"Depth range: {result['depth_map'].min():.2f}m - {result['depth_map'].max():.2f}m")
+print(f"Mean depth: {result['depth_map'].mean():.2f}m")`
+    }
+  };
+
+  const handleRunCode = async () => {
+    setIsRunning(true);
+    setOutput('Initializing perception pipeline...\n');
+
+    // Simulate perception execution with realistic output
+    setTimeout(() => {
+      const simulatedOutput = `Perception pipeline initialized successfully
+Image loaded: (480, 640, 3) RGB
+Feature extraction: Completed
+Object detection: Running YOLOv8-tiny
+Detected 3 objects with confidence > 0.5
+Semantic segmentation: Processing 21 classes
+Depth estimation: Stereo matching algorithm
+Processing time: 45ms
+Memory usage: 2.3GB GPU, 1.1GB CPU
+Perception pipeline completed successfully`;
+
+      setOutput(simulatedOutput);
+      setExecutionResult({ success: true, message: 'Perception pipeline executed successfully!' });
+      setIsRunning(false);
+    }, 2500);
+  };
+
+  const handleStopCode = () => {
+    setIsRunning(false);
+    setOutput(prev => prev + '\n[Pipeline stopped by user]');
+    setExecutionResult(null);
+  };
+
+  const handleExampleChange = (exampleKey) => {
+    setSelectedExample(exampleKey);
+    setCode(examples[exampleKey].code);
+    setOutput('');
+    setExecutionResult(null);
+  };
+
+  const handleCodeChange = (e) => {
+    setCode(e.target.value);
+  };
+
+  return (
+    <div className={styles.playgroundContainer}>
+      <div className={styles.playgroundHeader}>
+        <h2>Perception Interactive Playground</h2>
+        <p>Experiment with computer vision and perception algorithms. Try different perception tasks.</p>
+      </div>
+
+      <div className={styles.playgroundControls}>
+        <div className={styles.exampleSelector}>
+          <label htmlFor="perception-example-select">Choose an example:</label>
+          <select
+            id="perception-example-select"
+            value={selectedExample}
+            onChange={(e) => handleExampleChange(e.target.value)}
+            className={styles.exampleSelect}
+          >
+            {Object.entries(examples).map(([key, example]) => (
+              <option key={key} value={key}>{example.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.executionControls}>
+          <button
+            onClick={handleRunCode}
+            disabled={isRunning}
+            className={`${styles.runButton} ${isRunning ? styles.running : ''}`}
+          >
+            {isRunning ? 'Running...' : 'Run Pipeline'}
+          </button>
+
+          {isRunning && (
+            <button
+              onClick={handleStopCode}
+              className={styles.stopButton}
+            >
+              Stop
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.codeEditor}>
+        <textarea
+          value={code}
+          onChange={handleCodeChange}
+          className={styles.codeTextarea}
+          spellCheck="false"
+        />
+      </div>
+
+      <div className={styles.outputPanel}>
+        <h3>Perception Output</h3>
+        <div className={styles.outputContent}>
+          <pre>{output}</pre>
+        </div>
+
+        {executionResult && (
+          <div className={`${styles.executionResult} ${executionResult.success ? styles.success : styles.error}`}>
+            {executionResult.message}
+          </div>
+        )}
+      </div>
+
+      <div className={styles.conceptExplainer}>
+        <h3>Perception Concepts Demonstrated</h3>
+        <ul>
+          <li><strong>Object Detection:</strong> Identifying and localizing objects in images</li>
+          <li><strong>Semantic Segmentation:</strong> Pixel-level classification of image content</li>
+          <li><strong>Depth Estimation:</strong> Estimating distance to objects in the scene</li>
+          <li><strong>Feature Extraction:</strong> Identifying distinctive image elements</li>
+          <li><strong>Visual SLAM:</strong> Simultaneous localization and mapping from visual input</li>
+          <li><strong>Sensor Fusion:</strong> Combining data from multiple sensors</li>
+        </ul>
+      </div>
+
+      <div className={styles.learningResources}>
+        <h3>Learning Resources</h3>
+        <ul>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">OpenCV Documentation</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">Computer Vision Tutorials</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">Deep Learning for Vision</a></li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default PerceptionPlayground;

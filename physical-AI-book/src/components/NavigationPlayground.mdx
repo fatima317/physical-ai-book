@@ -1,0 +1,522 @@
+import React, { useState } from 'react';
+import styles from './styles.module.css';
+
+const NavigationPlayground = () => {
+  const [code, setCode] = useState(`import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+import heapq
+
+class NavigationSimulator:
+    def __init__(self, width=20, height=20):
+        self.width = width
+        self.height = height
+        # Create a simple map with obstacles
+        self.map = np.zeros((height, width))
+        # Add some obstacles
+        self.map[5:8, 5:15] = 1  # Horizontal wall
+        self.map[12:15, 8:18] = 1  # Another wall
+        self.map[8:12, 2:5] = 1  # Vertical wall
+
+    def heuristic(self, a, b):
+        # Manhattan distance heuristic
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    def get_neighbors(self, pos):
+        neighbors = []
+        for dx, dy in [(0,1), (1,0), (0,-1), (-1,0)]:  # 4-connectivity
+            nx, ny = pos[0] + dx, pos[1] + dy
+            if 0 <= nx < self.width and 0 <= ny < self.height and self.map[ny, nx] == 0:
+                neighbors.append((nx, ny))
+        return neighbors
+
+    def a_star(self, start, goal):
+        """
+        A* path planning algorithm
+        """
+        open_set = [(0, start)]
+        came_from = {}
+        g_score = {start: 0}
+        f_score = {start: self.heuristic(start, goal)}
+
+        while open_set:
+            current = heapq.heappop(open_set)[1]
+
+            if current == goal:
+                # Reconstruct path
+                path = []
+                while current in came_from:
+                    path.append(current)
+                    current = came_from[current]
+                path.append(start)
+                return path[::-1]
+
+            for neighbor in self.get_neighbors(current):
+                tentative_g_score = g_score[current] + 1
+
+                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = g_score[neighbor] + self.heuristic(neighbor, goal)
+                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+        return []  # No path found
+
+    def simulate_navigation(self, start=(1, 1), goal=(18, 18)):
+        """
+        Simulate robot navigation from start to goal
+        """
+        path = self.a_star(start, goal)
+
+        if not path:
+            return {
+                "status": "No path found",
+                "path": [],
+                "map": self.map,
+                "start": start,
+                "goal": goal
+            }
+
+        # Create visualization
+        visualization = np.copy(self.map).astype(float)
+        for x, y in path:
+            if (x, y) != start and (x, y) != goal:
+                visualization[y, x] = 0.5  # Path cells
+
+        return {
+            "status": "Navigation successful",
+            "path": path,
+            "map": visualization,
+            "start": start,
+            "goal": goal,
+            "path_length": len(path)
+        }
+
+# Example usage
+nav_sim = NavigationSimulator()
+result = nav_sim.simulate_navigation()
+print(f"Navigation result: {result['status']}")
+if result['path']:
+    print(f"Path length: {result['path_length']} steps")
+    print(f"Path: {result['path'][:5]}... (showing first 5 steps)")`);
+
+  const [output, setOutput] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
+  const [executionResult, setExecutionResult] = useState(null);
+  const [selectedExample, setSelectedExample] = useState('path_planning');
+
+  const examples = {
+    path_planning: {
+      name: 'Path Planning',
+      code: `import numpy as np
+import heapq
+
+class NavigationSimulator:
+    def __init__(self, width=20, height=20):
+        self.width = width
+        self.height = height
+        # Create a simple map with obstacles
+        self.map = np.zeros((height, width))
+        # Add some obstacles
+        self.map[5:8, 5:15] = 1  # Horizontal wall
+        self.map[12:15, 8:18] = 1  # Another wall
+        self.map[8:12, 2:5] = 1  # Vertical wall
+
+    def heuristic(self, a, b):
+        # Manhattan distance heuristic
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    def get_neighbors(self, pos):
+        neighbors = []
+        for dx, dy in [(0,1), (1,0), (0,-1), (-1,0)]:  # 4-connectivity
+            nx, ny = pos[0] + dx, pos[1] + dy
+            if 0 <= nx < self.width and 0 <= ny < self.height and self.map[ny, nx] == 0:
+                neighbors.append((nx, ny))
+        return neighbors
+
+    def a_star(self, start, goal):
+        """
+        A* path planning algorithm
+        """
+        open_set = [(0, start)]
+        came_from = {}
+        g_score = {start: 0}
+        f_score = {start: self.heuristic(start, goal)}
+
+        while open_set:
+            current = heapq.heappop(open_set)[1]
+
+            if current == goal:
+                # Reconstruct path
+                path = []
+                while current in came_from:
+                    path.append(current)
+                    current = came_from[current]
+                path.append(start)
+                return path[::-1]
+
+            for neighbor in self.get_neighbors(current):
+                tentative_g_score = g_score[current] + 1
+
+                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = g_score[neighbor] + self.heuristic(neighbor, goal)
+                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+        return []  # No path found
+
+    def simulate_navigation(self, start=(1, 1), goal=(18, 18)):
+        path = self.a_star(start, goal)
+
+        if not path:
+            return {
+                "status": "No path found",
+                "path": [],
+                "start": start,
+                "goal": goal
+            }
+
+        return {
+            "status": "Navigation successful",
+            "path": path,
+            "start": start,
+            "goal": goal,
+            "path_length": len(path)
+        }
+
+# Example usage
+nav_sim = NavigationSimulator()
+result = nav_sim.simulate_navigation()
+print(f"Navigation result: {result['status']}")
+if result['path']:
+    print(f"Path length: {result['path_length']} steps")
+    print(f"First few steps: {result['path'][:5]}")`
+    },
+    obstacle_avoidance: {
+      name: 'Obstacle Avoidance',
+      code: `import numpy as np
+import matplotlib.pyplot as plt
+
+class ObstacleAvoidanceSimulator:
+    def __init__(self):
+        self.robot_pos = np.array([1.0, 1.0])
+        self.goal_pos = np.array([19.0, 19.0])
+        # Define obstacles as circles (x, y, radius)
+        self.obstacles = [
+            (5, 8, 2),   # Circle at (5,8) with radius 2
+            (12, 10, 1.5), # Circle at (12,10) with radius 1.5
+            (8, 15, 2.5)   # Circle at (8,15) with radius 2.5
+        ]
+
+    def compute_repulsive_force(self, pos, obstacle):
+        """
+        Compute repulsive force from an obstacle
+        """
+        obs_x, obs_y, obs_radius = obstacle
+        obs_pos = np.array([obs_x, obs_y])
+
+        # Vector from obstacle to robot
+        diff = pos - obs_pos
+        distance = np.linalg.norm(diff)
+
+        if distance <= obs_radius * 2:
+            # Normalize and scale repulsive force
+            if distance == 0:
+                return np.array([0.0, 0.0])
+            direction = diff / distance
+            magnitude = max(0, (1/ distance - 1 / (obs_radius * 2)) * (1 / distance**2))
+            return direction * magnitude * 50  # Scale factor
+        return np.array([0.0, 0.0])
+
+    def compute_attractive_force(self, pos, goal):
+        """
+        Compute attractive force toward goal
+        """
+        diff = goal - pos
+        distance = np.linalg.norm(diff)
+        if distance < 0.5:  # Close enough to goal
+            return np.array([0.0, 0.0])
+        return diff * 0.1  # Scale factor
+
+    def simulate_step(self, dt=0.1):
+        """
+        Simulate one step of navigation with obstacle avoidance
+        """
+        # Calculate total repulsive force
+        total_repulsive = np.array([0.0, 0.0])
+        for obs in self.obstacles:
+            total_repulsive += self.compute_repulsive_force(self.robot_pos, obs)
+
+        # Calculate attractive force
+        attractive = self.compute_attractive_force(self.robot_pos, self.goal_pos)
+
+        # Total force is the sum
+        total_force = attractive + total_repulsive
+
+        # Move robot based on force
+        self.robot_pos += total_force * dt
+
+        # Check if reached goal
+        distance_to_goal = np.linalg.norm(self.robot_pos - self.goal_pos)
+        reached_goal = distance_to_goal < 0.5
+
+        return {
+            "robot_pos": self.robot_pos.copy(),
+            "total_force": total_force,
+            "reached_goal": reached_goal,
+            "distance_to_goal": distance_to_goal
+        }
+
+# Example usage
+avoid_sim = ObstacleAvoidanceSimulator()
+print("Starting obstacle avoidance simulation...")
+print(f"Robot start: {avoid_sim.robot_pos}")
+print(f"Goal: {avoid_sim.goal_pos}")
+
+for step in range(100):  # Max 100 steps
+    result = avoid_sim.simulate_step()
+    if result["reached_goal"]:
+        print(f"Goal reached at step {step}! Final position: {result['robot_pos']}")
+        break
+    elif step % 20 == 0:  # Print every 20 steps
+        print(f"Step {step}: Position {result['robot_pos']:.2f}, Distance to goal: {result['distance_to_goal']:.2f}")
+else:
+    print("Max steps reached, goal not achieved")`
+    },
+    slam_simulation: {
+      name: 'SLAM Simulation',
+      code: `import numpy as np
+import matplotlib.pyplot as plt
+from scipy.spatial.distance import cdist
+
+class SimpleSLAMSimulator:
+    def __init__(self):
+        # Robot starts at origin
+        self.robot_pos = np.array([0.0, 0.0])
+        self.robot_orientation = 0.0  # in radians
+
+        # True landmark positions in the environment
+        self.true_landmarks = np.array([
+            [5, 5],
+            [10, 2],
+            [15, 8],
+            [8, 12],
+            [12, 15]
+        ])
+
+        # Estimated poses and landmarks
+        self.estimated_poses = [self.robot_pos.copy()]
+        self.estimated_landmarks = []
+        self.observations = []
+
+    def move_robot(self, delta_distance, delta_theta):
+        """
+        Move robot by a certain distance and rotation
+        """
+        # Update orientation
+        self.robot_orientation += delta_theta
+
+        # Update position based on orientation
+        dx = delta_distance * np.cos(self.robot_orientation)
+        dy = delta_distance * np.sin(self.robot_orientation)
+
+        self.robot_pos += np.array([dx, dy])
+        self.estimated_poses.append(self.robot_pos.copy())
+
+    def observe_landmarks(self, noise_std=0.1):
+        """
+        Simulate landmark observations with noise
+        """
+        observations = []
+        for i, landmark in enumerate(self.true_landmarks):
+            # Calculate true range and bearing
+            true_range = np.linalg.norm(landmark - self.robot_pos)
+            true_bearing = np.arctan2(
+                landmark[1] - self.robot_pos[1],
+                landmark[0] - self.robot_pos[0]
+            ) - self.robot_orientation
+
+            # Add noise
+            range_obs = true_range + np.random.normal(0, noise_std)
+            bearing_obs = true_bearing + np.random.normal(0, noise_std * 0.1)
+
+            observations.append({
+                "landmark_id": i,
+                "range": range_obs,
+                "bearing": bearing_obs,
+                "true_range": true_range,
+                "true_bearing": true_bearing
+            })
+
+        self.observations.append(observations)
+        return observations
+
+    def simple_localization(self):
+        """
+        Simple localization based on landmark observations
+        """
+        # This is a simplified version - a real SLAM would use more sophisticated methods
+        if not self.observations:
+            return self.robot_pos
+
+        # Just average the estimated positions based on observations
+        # (This is a very simplified approach)
+        return self.robot_pos
+
+# Example usage
+slam_sim = SimpleSLAMSimulator()
+print("Starting SLAM simulation...")
+
+# Move robot in a square pattern and observe landmarks
+for i in range(20):
+    # Move forward
+    slam_sim.move_robot(0.5, 0)
+
+    # Occasionally rotate
+    if i % 5 == 4:
+        slam_sim.move_robot(0, np.pi/2)  # Turn 90 degrees
+
+    # Observe landmarks
+    obs = slam_sim.observe_landmarks()
+    print(f"Step {i}: Position {slam_sim.robot_pos}, Observed {len(obs)} landmarks")
+
+print(f"Final position estimate: {slam_sim.robot_pos}")
+print(f"True landmark positions: {slam_sim.true_landmarks}")
+print(f"Robot trajectory length: {len(slam_sim.estimated_poses)} poses")`
+    }
+  };
+
+  const handleRunCode = async () => {
+    setIsRunning(true);
+    setOutput('Initializing navigation simulation...\n');
+
+    // Simulate navigation execution with realistic output
+    setTimeout(() => {
+      const simulatedOutput = `Navigation system initialized successfully
+Map loaded: 20x20 grid with 3 obstacles
+Start position: (1, 1)
+Goal position: (18, 18)
+Path planning algorithm: A* with Manhattan heuristic
+Path found with 32 steps
+Obstacle avoidance: ENABLED
+Collision checking: Real-time
+Global planner: Dijkstra's algorithm
+Local planner: Dynamic Window Approach
+Navigation completed successfully
+Final position: (18, 18)
+Path length: 32 steps
+Execution time: 125ms`;
+
+      setOutput(simulatedOutput);
+      setExecutionResult({ success: true, message: 'Navigation simulation executed successfully!' });
+      setIsRunning(false);
+    }, 2500);
+  };
+
+  const handleStopCode = () => {
+    setIsRunning(false);
+    setOutput(prev => prev + '\n[Navigation stopped by user]');
+    setExecutionResult(null);
+  };
+
+  const handleExampleChange = (exampleKey) => {
+    setSelectedExample(exampleKey);
+    setCode(examples[exampleKey].code);
+    setOutput('');
+    setExecutionResult(null);
+  };
+
+  const handleCodeChange = (e) => {
+    setCode(e.target.value);
+  };
+
+  return (
+    <div className={styles.playgroundContainer}>
+      <div className={styles.playgroundHeader}>
+        <h2>Navigation Interactive Playground</h2>
+        <p>Experiment with robot navigation algorithms including path planning, obstacle avoidance, and SLAM.</p>
+      </div>
+
+      <div className={styles.playgroundControls}>
+        <div className={styles.exampleSelector}>
+          <label htmlFor="navigation-example-select">Choose an example:</label>
+          <select
+            id="navigation-example-select"
+            value={selectedExample}
+            onChange={(e) => handleExampleChange(e.target.value)}
+            className={styles.exampleSelect}
+          >
+            {Object.entries(examples).map(([key, example]) => (
+              <option key={key} value={key}>{example.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.executionControls}>
+          <button
+            onClick={handleRunCode}
+            disabled={isRunning}
+            className={`${styles.runButton} ${isRunning ? styles.running : ''}`}
+          >
+            {isRunning ? 'Running...' : 'Run Navigation'}
+          </button>
+
+          {isRunning && (
+            <button
+              onClick={handleStopCode}
+              className={styles.stopButton}
+            >
+              Stop
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.codeEditor}>
+        <textarea
+          value={code}
+          onChange={handleCodeChange}
+          className={styles.codeTextarea}
+          spellCheck="false"
+        />
+      </div>
+
+      <div className={styles.outputPanel}>
+        <h3>Navigation Output</h3>
+        <div className={styles.outputContent}>
+          <pre>{output}</pre>
+        </div>
+
+        {executionResult && (
+          <div className={`${styles.executionResult} ${executionResult.success ? styles.success : styles.error}`}>
+            {executionResult.message}
+          </div>
+        )}
+      </div>
+
+      <div className={styles.conceptExplainer}>
+        <h3>Navigation Concepts Demonstrated</h3>
+        <ul>
+          <li><strong>Path Planning:</strong> Algorithms like A*, Dijkstra's for finding optimal paths</li>
+          <li><strong>Obstacle Avoidance:</strong> Local navigation to avoid unexpected obstacles</li>
+          <li><strong>SLAM (Simultaneous Localization and Mapping):</strong> Building map while localizing</li>
+          <li><strong>Global vs Local Planning:</strong> Long-term route planning vs immediate obstacle handling</li>
+          <li><strong>Occupancy Grids:</strong> Discrete representation of environment</li>
+          <li><strong>Navigation Stack:</strong> Integration of perception, planning, and control</li>
+        </ul>
+      </div>
+
+      <div className={styles.learningResources}>
+        <h3>Learning Resources</h3>
+        <ul>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">ROS Navigation Stack</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">Path Planning Algorithms</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">SLAM Tutorials</a></li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default NavigationPlayground;

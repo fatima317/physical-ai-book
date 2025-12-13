@@ -1,0 +1,464 @@
+import React, { useState } from 'react';
+import styles from './styles.module.css';
+
+const HardwarePlayground = () => {
+  const [code, setCode] = useState(`import Jetson.GPIO as GPIO
+import time
+import serial
+import smbus2
+
+class HardwareSimulator:
+    def __init__(self):
+        # Simulate GPIO setup
+        self.gpio_initialized = False
+        self.pins = {}
+
+        # Simulate other hardware interfaces
+        self.i2c_bus = None
+        self.serial_port = None
+
+        print("Hardware simulator initialized")
+        print("Available interfaces: GPIO, I2C, Serial, PWM")
+
+    def setup_gpio(self, pin, mode):
+        """
+        Simulate GPIO setup
+        """
+        if not self.gpio_initialized:
+            print("GPIO setup: Simulating Jetson.GPIO.setmode(GPIO.BOARD)")
+            self.gpio_initialized = True
+
+        self.pins[pin] = {
+            'mode': mode,
+            'value': 0,
+            'configured': True
+        }
+        print(f"Pin {pin} configured as {mode}")
+
+    def digital_write(self, pin, value):
+        """
+        Simulate digital write to GPIO pin
+        """
+        if pin in self.pins:
+            self.pins[pin]['value'] = value
+            print(f"Pin {pin} set to {value}")
+        else:
+            print(f"Pin {pin} not configured")
+
+    def digital_read(self, pin):
+        """
+        Simulate digital read from GPIO pin
+        """
+        if pin in self.pins:
+            # Simulate sensor reading with some variation
+            import random
+            simulated_value = random.randint(0, 1) if self.pins[pin]['mode'] == 'IN' else self.pins[pin]['value']
+            print(f"Reading from pin {pin}: {simulated_value}")
+            return simulated_value
+        else:
+            print(f"Pin {pin} not configured")
+            return 0
+
+    def simulate_sensor_reading(self, sensor_type="distance"):
+        """
+        Simulate various sensor readings
+        """
+        import random
+        if sensor_type == "distance":
+            # Simulate ultrasonic sensor (in cm)
+            return round(random.uniform(5.0, 200.0), 2)
+        elif sensor_type == "temperature":
+            # Simulate temperature sensor (in Celsius)
+            return round(random.uniform(15.0, 35.0), 2)
+        elif sensor_type == "light":
+            # Simulate light sensor (in lux)
+            return random.randint(0, 1000)
+        else:
+            return 0
+
+# Example usage
+hw_sim = HardwareSimulator()
+
+# Simulate LED control
+hw_sim.setup_gpio(18, "OUT")
+hw_sim.digital_write(18, 1)
+time.sleep(0.1)
+hw_sim.digital_write(18, 0)
+
+# Simulate sensor reading
+distance = hw_sim.simulate_sensor_reading("distance")
+print(f"Simulated distance reading: {distance} cm")
+
+temperature = hw_sim.simulate_sensor_reading("temperature")
+print(f"Simulated temperature reading: {temperature} °C")
+
+print("Hardware simulation completed successfully")`);
+
+  const [output, setOutput] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
+  const [executionResult, setExecutionResult] = useState(null);
+  const [selectedExample, setSelectedExample] = useState('gpio_control');
+
+  const examples = {
+    gpio_control: {
+      name: 'GPIO Control',
+      code: `import Jetson.GPIO as GPIO
+import time
+
+class GPIOController:
+    def __init__(self):
+        # GPIO setup
+        GPIO.setmode(GPIO.BOARD)  # Use physical pin numbering
+        self.led_pin = 18
+        self.button_pin = 12
+
+        # Setup pins
+        GPIO.setup(self.led_pin, GPIO.OUT)
+        GPIO.setup(self.button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+        print("GPIO controller initialized")
+        print("LED connected to pin 18, Button connected to pin 12")
+
+    def blink_led(self, times=3, delay=0.5):
+        """
+        Blink LED a specified number of times
+        """
+        for i in range(times):
+            GPIO.output(self.led_pin, GPIO.HIGH)
+            print(f"LED ON - Iteration {i+1}/{times}")
+            time.sleep(delay)
+
+            GPIO.output(self.led_pin, GPIO.LOW)
+            print(f"LED OFF - Iteration {i+1}/{times}")
+            time.sleep(delay)
+
+    def read_button(self):
+        """
+        Read button state
+        """
+        button_state = GPIO.input(self.button_pin)
+        state_str = "PRESSED" if button_state == GPIO.LOW else "NOT PRESSED"
+        print(f"Button state: {state_str}")
+        return button_state
+
+    def cleanup(self):
+        """
+        Clean up GPIO settings
+        """
+        GPIO.cleanup()
+        print("GPIO cleaned up")
+
+# Example usage
+controller = GPIOController()
+
+try:
+    print("Starting LED blink sequence...")
+    controller.blink_led(times=3, delay=0.3)
+
+    print("\\nReading button state...")
+    controller.read_button()
+
+    print("GPIO control completed successfully")
+
+finally:
+    controller.cleanup()`
+    },
+    i2c_sensor: {
+      name: 'I2C Sensor Interface',
+      code: `import smbus2
+import time
+import struct
+
+class I2CSensorInterface:
+    def __init__(self, bus_number=1):
+        # Initialize I2C bus
+        self.bus = smbus2.SMBus(bus_number)
+        self.sensor_address = 0x48  # Example address for ADC or temperature sensor
+
+        print(f"I2C interface initialized on bus {bus_number}")
+        print(f"Sensor address: 0x{self.sensor_address:02X}")
+
+    def scan_i2c_bus(self):
+        """
+        Scan I2C bus for connected devices
+        """
+        devices = []
+        print("Scanning I2C bus for devices...")
+
+        for addr in range(0x03, 0x78):  # Valid I2C address range
+            try:
+                self.bus.read_byte(addr)
+                devices.append(addr)
+                print(f"Device found at address: 0x{addr:02X}")
+            except:
+                pass  # No device at this address
+
+        print(f"Total devices found: {len(devices)}")
+        return devices
+
+    def read_temperature(self):
+        """
+        Simulate reading temperature from sensor
+        """
+        # In a real implementation, this would read from the actual sensor
+        # For simulation, we'll generate a realistic temperature value
+        import random
+        temperature = 20.0 + random.uniform(-5.0, 15.0)  # 15-35°C range
+        print(f"Simulated temperature reading: {temperature:.2f}°C")
+        return temperature
+
+    def read_adc_value(self, channel=0):
+        """
+        Simulate reading ADC value
+        """
+        # In a real implementation, this would read from ADC device
+        # For simulation, generate a realistic ADC value
+        import random
+        adc_value = random.randint(0, 4095)  # 12-bit ADC (0-4095)
+        voltage = adc_value * (3.3 / 4095)  # Convert to voltage
+        print(f"Simulated ADC reading: {adc_value} (voltage: {voltage:.3f}V)")
+        return adc_value
+
+# Example usage
+i2c_interface = I2CSensorInterface()
+
+print("Scanning for I2C devices...")
+devices = i2c_interface.scan_i2c_bus()
+
+print("\\nReading sensor values...")
+temp = i2c_interface.read_temperature()
+adc_val = i2c_interface.read_adc_value()
+
+print("I2C sensor interface completed successfully")`
+    },
+    pwm_motor_control: {
+      name: 'PWM Motor Control',
+      code: `import Jetson.GPIO as GPIO
+import time
+
+class PWMMotorController:
+    def __init__(self):
+        # GPIO setup
+        GPIO.setmode(GPIO.BOARD)
+
+        # Motor connections (example pins)
+        self.motor_pwm_pin = 13  # Hardware PWM capable pin
+        self.motor_dir_pin1 = 16
+        self.motor_dir_pin2 = 15
+
+        # Setup pins
+        GPIO.setup(self.motor_pwm_pin, GPIO.OUT)
+        GPIO.setup(self.motor_dir_pin1, GPIO.OUT)
+        GPIO.setup(self.motor_dir_pin2, GPIO.OUT)
+
+        # Initialize PWM
+        self.pwm = GPIO.PWM(self.motor_pwm_pin, 1000)  # 1kHz frequency
+        self.pwm.start(0)  # Start with 0% duty cycle (motor off)
+
+        print("PWM motor controller initialized")
+        print("Motor connected to pins: PWM=13, DIR1=16, DIR2=15")
+
+    def set_motor_speed(self, speed):
+        """
+        Set motor speed (0-100%)
+        """
+        speed = max(0, min(100, speed))  # Clamp to 0-100%
+        self.pwm.ChangeDutyCycle(speed)
+        print(f"Motor speed set to {speed}%")
+
+    def set_direction(self, direction):
+        """
+        Set motor direction: 'forward', 'reverse', or 'stop'
+        """
+        if direction == 'forward':
+            GPIO.output(self.motor_dir_pin1, GPIO.HIGH)
+            GPIO.output(self.motor_dir_pin2, GPIO.LOW)
+            print("Motor direction: FORWARD")
+        elif direction == 'reverse':
+            GPIO.output(self.motor_dir_pin1, GPIO.LOW)
+            GPIO.output(self.motor_dir_pin2, GPIO.HIGH)
+            print("Motor direction: REVERSE")
+        else:  # stop
+            GPIO.output(self.motor_dir_pin1, GPIO.LOW)
+            GPIO.output(self.motor_dir_pin2, GPIO.LOW)
+            print("Motor direction: STOP")
+
+    def move_with_speed_profile(self):
+        """
+        Demonstrate speed profile control
+        """
+        print("Starting speed profile demonstration...")
+
+        # Speed profile: accelerate, maintain, decelerate
+        speeds = [0, 25, 50, 75, 100, 75, 50, 25, 0]
+
+        for speed in speeds:
+            self.set_motor_speed(speed)
+            time.sleep(0.5)  # Hold each speed for 0.5 seconds
+
+        print("Speed profile completed")
+
+    def cleanup(self):
+        """
+        Clean up motor controller
+        """
+        self.pwm.stop()
+        GPIO.cleanup()
+        print("Motor controller cleaned up")
+
+# Example usage
+motor_ctrl = PWMMotorController()
+
+try:
+    # Set direction to forward
+    motor_ctrl.set_direction('forward')
+
+    # Demonstrate speed control
+    print("\\nControlling motor speed...")
+    for speed in [0, 30, 60, 100, 60, 30, 0]:
+        motor_ctrl.set_motor_speed(speed)
+        time.sleep(1)
+
+    # Demonstrate speed profile
+    print("\\nRunning speed profile...")
+    motor_ctrl.move_with_speed_profile()
+
+    print("PWM motor control completed successfully")
+
+finally:
+    motor_ctrl.cleanup()`
+    }
+  };
+
+  const handleRunCode = async () => {
+    setIsRunning(true);
+    setOutput('Initializing hardware simulation...\n');
+
+    // Simulate hardware execution with realistic output
+    setTimeout(() => {
+      const simulatedOutput = `Hardware simulation initialized successfully
+GPIO subsystem: Online
+I2C bus: Bus 1, 3 devices detected
+SPI bus: Online
+UART interfaces: 2 available
+PWM channels: 4 channels available
+ADC inputs: 6 channels available
+Sensor interfaces: Accelerometer, Gyroscope, Magnetometer
+Power management: Active
+Thermal monitoring: Active
+Hardware simulation completed successfully
+All interfaces responding normally
+Simulation time: 2.34s`;
+
+      setOutput(simulatedOutput);
+      setExecutionResult({ success: true, message: 'Hardware simulation executed successfully!' });
+      setIsRunning(false);
+    }, 2500);
+  };
+
+  const handleStopCode = () => {
+    setIsRunning(false);
+    setOutput(prev => prev + '\n[Hardware simulation stopped by user]');
+    setExecutionResult(null);
+  };
+
+  const handleExampleChange = (exampleKey) => {
+    setSelectedExample(exampleKey);
+    setCode(examples[exampleKey].code);
+    setOutput('');
+    setExecutionResult(null);
+  };
+
+  const handleCodeChange = (e) => {
+    setCode(e.target.value);
+  };
+
+  return (
+    <div className={styles.playgroundContainer}>
+      <div className={styles.playgroundHeader}>
+        <h2>Hardware Interactive Playground</h2>
+        <p>Simulate hardware interfaces and control systems for the Jetson platform. Experiment with GPIO, I2C, PWM, and other interfaces.</p>
+      </div>
+
+      <div className={styles.playgroundControls}>
+        <div className={styles.exampleSelector}>
+          <label htmlFor="hardware-example-select">Choose an example:</label>
+          <select
+            id="hardware-example-select"
+            value={selectedExample}
+            onChange={(e) => handleExampleChange(e.target.value)}
+            className={styles.exampleSelect}
+          >
+            {Object.entries(examples).map(([key, example]) => (
+              <option key={key} value={key}>{example.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className={styles.executionControls}>
+          <button
+            onClick={handleRunCode}
+            disabled={isRunning}
+            className={`${styles.runButton} ${isRunning ? styles.running : ''}`}
+          >
+            {isRunning ? 'Running...' : 'Run Hardware Sim'}
+          </button>
+
+          {isRunning && (
+            <button
+              onClick={handleStopCode}
+              className={styles.stopButton}
+            >
+              Stop
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.codeEditor}>
+        <textarea
+          value={code}
+          onChange={handleCodeChange}
+          className={styles.codeTextarea}
+          spellCheck="false"
+        />
+      </div>
+
+      <div className={styles.outputPanel}>
+        <h3>Hardware Output</h3>
+        <div className={styles.outputContent}>
+          <pre>{output}</pre>
+        </div>
+
+        {executionResult && (
+          <div className={`${styles.executionResult} ${executionResult.success ? styles.success : styles.error}`}>
+            {executionResult.message}
+          </div>
+        )}
+      </div>
+
+      <div className={styles.conceptExplainer}>
+        <h3>Hardware Concepts Demonstrated</h3>
+        <ul>
+          <li><strong>GPIO Control:</strong> General-purpose input/output pins for digital signals</li>
+          <li><strong>I2C Communication:</strong> Inter-Integrated Circuit for connecting low-speed peripherals</li>
+          <li><strong>SPI Communication:</strong> Serial Peripheral Interface for faster communication</li>
+          <li><strong>PWM Control:</strong> Pulse Width Modulation for motor speed and LED brightness control</li>
+          <li><strong>Sensor Interfaces:</strong> Connecting and reading from various sensors</li>
+          <li><strong>Hardware Abstraction:</strong> Programming interfaces for physical components</li>
+        </ul>
+      </div>
+
+      <div className={styles.learningResources}>
+        <h3>Learning Resources</h3>
+        <ul>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">Jetson Hardware Documentation</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">GPIO Programming Guide</a></li>
+          <li><a href="#" target="_blank" rel="noopener noreferrer">Hardware Interface Tutorials</a></li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default HardwarePlayground;

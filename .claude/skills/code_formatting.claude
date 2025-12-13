@@ -1,0 +1,91 @@
+# Code Formatting Skill
+
+This skill provides comprehensive code formatting and standardization for the Physical AI & Humanoid Robotics book. It ensures all code examples follow consistent standards while maintaining educational value and technical accuracy.
+
+## Purpose
+- Apply consistent formatting to code examples across all modules
+- Ensure code follows ROS 2 Humble, Python, C++, and other relevant standards
+- Maintain readability and educational value of code examples
+- Verify hardware compatibility with Jetson platform constraints
+- Include proper documentation and error handling
+
+## Core Components
+
+### Formatting Standards by Language
+
+#### Python (ROS 2 Humble)
+- Follow PEP 8 style guide
+- Use 4-space indentation
+- Include docstrings for all functions/classes
+- Use snake_case for variable and function names
+- Include type hints where appropriate
+- Add meaningful comments explaining complex logic
+
+#### C++ (ROS 2 Humble)
+- Follow Google C++ Style Guide
+- Use 2-space indentation
+- Include Doxygen-style documentation
+- Use camelCase for variables and functions
+- Implement proper RAII principles
+- Add meaningful comments explaining complex logic
+
+#### Launch Files (Python/XML)
+- Consistent parameter organization
+- Proper namespace handling
+- Clear node naming conventions
+- Include documentation for parameters
+
+### Educational Code Standards
+- Include setup and initialization code
+- Add proper error handling and logging
+- Provide clear variable names that reflect their purpose
+- Include cleanup and shutdown procedures
+- Add comments explaining the educational purpose
+- Consider different skill levels (beginner to advanced)
+
+### Hardware Compatibility Checks
+- Verify ARM64 architecture compatibility
+- Check memory usage constraints for Jetson
+- Validate GPU acceleration usage
+- Ensure proper power management
+- Include thermal considerations
+
+## Code Quality Guidelines
+
+### Structure Requirements
+- Proper imports at the top
+- Clear separation of concerns
+- Modular design for educational clarity
+- Consistent naming conventions
+- Appropriate use of constants and configuration
+
+### Documentation Standards
+- Comprehensive module-level documentation
+- Function/class docstrings with parameters and return values
+- Inline comments for complex logic
+- Example usage in comments
+- References to relevant ROS 2 documentation
+
+### Error Handling
+- Proper exception handling
+- Graceful degradation when possible
+- Informative error messages
+- Recovery strategies where appropriate
+- Logging for debugging purposes
+
+### Performance Considerations
+- Efficient algorithms for resource-constrained platforms
+- Proper resource management
+- Memory usage optimization
+- Real-time performance considerations
+- Battery life optimization for mobile robots
+
+## Integration Points
+- Personalization for different skill levels
+- Validation against hardware constraints
+- Translation compatibility for comments
+- Interactive MDX component integration
+- Testing and validation framework integration
+
+## Usage Instructions
+Apply this skill to all code examples to ensure consistency, educational value, and hardware compatibility. Review each code snippet against the standards above before inclusion in the book.

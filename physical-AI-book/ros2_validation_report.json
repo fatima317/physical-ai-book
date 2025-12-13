@@ -1,0 +1,97 @@
+{
+  "timestamp": "2025-12-10T20:41:40.385Z",
+  "testName": "ROS 2 Code Example Validation",
+  "totalTests": 4,
+  "passedTests": 4,
+  "failedTests": 0,
+  "passRate": 100,
+  "averageScore": 93.33333333333334,
+  "compatibilityBreakdown": {
+    "ros2Compatible": 4,
+    "simulationCompatible": 3,
+    "hardwareCompatible": 3
+  },
+  "summary": {
+    "errors": 0,
+    "warnings": 6,
+    "suggestions": 0
+  },
+  "detailedResults": [
+    {
+      "language": "python",
+      "ros2Compatible": true,
+      "simulationCompatible": true,
+      "hardwareCompatible": true,
+      "errors": [],
+      "warnings": [],
+      "suggestions": [],
+      "importIssues": [],
+      "nodeStructure": true,
+      "lifecycleIssues": [],
+      "ros2Score": 100,
+      "simulationScore": 100,
+      "hardwareScore": 100,
+      "overallScore": 100,
+      "passed": true
+    },
+    {
+      "language": "python",
+      "ros2Compatible": true,
+      "simulationCompatible": true,
+      "hardwareCompatible": false,
+      "errors": [],
+      "warnings": [
+        "Consider using standard ROS 2 initialization pattern: rclpy.init(), rclpy.spin(), rclpy.shutdown()",
+        "Uses simulation-specific packages: gazebo_msgs. May not work on real hardware.",
+        "Resource creation detected without explicit cleanup. Consider implementing proper resource management."
+      ],
+      "suggestions": [],
+      "importIssues": [],
+      "nodeStructure": true,
+      "lifecycleIssues": [],
+      "ros2Score": 100,
+      "simulationScore": 100,
+      "hardwareScore": 60,
+      "overallScore": 86.66666666666667,
+      "passed": true
+    },
+    {
+      "language": "python",
+      "ros2Compatible": true,
+      "simulationCompatible": false,
+      "hardwareCompatible": true,
+      "errors": [],
+      "warnings": [
+        "Consider using standard ROS 2 initialization pattern: rclpy.init(), rclpy.spin(), rclpy.shutdown()",
+        "Uses hardware-specific packages: hardware_interface. May not work in simulation.",
+        "Resource creation detected without explicit cleanup. Consider implementing proper resource management."
+      ],
+      "suggestions": [],
+      "importIssues": [],
+      "nodeStructure": true,
+      "lifecycleIssues": [],
+      "ros2Score": 100,
+      "simulationScore": 60,
+      "hardwareScore": 100,
+      "overallScore": 86.66666666666667,
+      "passed": true
+    },
+    {
+      "language": "cpp",
+      "ros2Compatible": true,
+      "simulationCompatible": true,
+      "hardwareCompatible": true,
+      "errors": [],
+      "warnings": [],
+      "suggestions": [],
+      "importIssues": [],
+      "nodeStructure": true,
+      "lifecycleIssues": [],
+      "ros2Score": 100,
+      "simulationScore": 100,
+      "hardwareScore": 100,
+      "overallScore": 100,
+      "passed": true
+    }
+  ]
+}
