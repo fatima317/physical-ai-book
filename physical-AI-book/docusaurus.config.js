@@ -9,13 +9,13 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-organization.github.io',
+  url: 'https://fatima317.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<organization-name>/'
   baseUrl: '/physical-ai-book/',
 
   // GitHub pages deployment config.
-  organizationName: 'your-organization',
+  organizationName: 'fatima317',
   projectName: 'physical-ai-book',
   trailingSlash: false,
 
@@ -40,7 +40,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/your-organization/physical-ai-book/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/fatima317/physical-ai-book/tree/main/',
         },
         blog: false, // Disable blog as not needed for educational content
         theme: {
@@ -73,7 +73,7 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://github.com/your-organization/physical-ai-book',
+            href: 'https://github.com/fatima317/physical-ai-book',
             label: 'GitHub',
             position: 'right',
           },
