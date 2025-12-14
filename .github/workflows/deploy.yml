@@ -23,14 +23,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: npm
           cache-dependency-path: physical-AI-book/package-lock.json
 
       - name: Install dependencies
         run: |
           cd physical-AI-book
-          npm ci
+          npm install
 
       - name: Build Docusaurus site
         run: |
@@ -38,7 +38,7 @@ jobs:
           npm run build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./physical-AI-book/build
