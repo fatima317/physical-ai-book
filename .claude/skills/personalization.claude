@@ -1,3 +1,9 @@
+---
+name: personalization
+description: Provides comprehensive personalization workflows for the Physical AI & Humanoid Robotics book with MDX compatibility
+version: 1.0.0
+---
+
 # Personalization Skill
 
 This skill provides comprehensive personalization workflows for the Physical AI & Humanoid Robotics book. It adapts content, examples, and learning paths based on individual user profiles, skill levels, and learning preferences.

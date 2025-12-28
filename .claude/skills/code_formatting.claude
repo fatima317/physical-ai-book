@@ -1,3 +1,9 @@
+---
+name: code_formatting
+description: Provides comprehensive code formatting and standardization for the Physical AI & Humanoid Robotics book with MDX compatibility
+version: 1.0.0
+---
+
 # Code Formatting Skill
 
 This skill provides comprehensive code formatting and standardization for the Physical AI & Humanoid Robotics book. It ensures all code examples follow consistent standards while maintaining educational value and technical accuracy.

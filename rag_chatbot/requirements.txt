@@ -1,0 +1,9 @@
+# Educational RAG Chatbot Requirements
+fastapi>=0.104.1
+uvicorn>=0.24.0
+pydantic>=2.5.0
+cohere>=4.9.0
+qdrant-client>=1.7.0
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.0
+python-dotenv>=1.0.0

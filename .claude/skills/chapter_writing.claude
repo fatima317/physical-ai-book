@@ -1,3 +1,9 @@
+---
+name: chapter_writing
+description: Provides structured approach to writing educational content for the Physical AI & Humanoid Robotics book with MDX compatibility
+version: 1.0.0
+---
+
 # Chapter Writing Skill
 
 This skill provides a structured approach to writing educational content for the Physical AI & Humanoid Robotics book. It focuses on creating well-organized, pedagogically sound chapters that follow best practices for technical education.

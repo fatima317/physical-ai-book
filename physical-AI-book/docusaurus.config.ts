@@ -145,6 +145,14 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+
+  // Add the RAG chatbot script to be loaded on all pages
+  scripts: [
+    {
+      src: 'src/components/rag-chatbot.js',
+      async: true,
+    },
+  ],
 };
 
 export default config;
