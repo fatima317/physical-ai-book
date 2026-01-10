@@ -1,2 +1,211 @@
 # Performance Benchmarks
-Content will be added later.
+
+This document provides performance benchmarks for various components and systems in the Physical AI & Humanoid Robotics curriculum.
+
+## Computational Performance
+
+### Jetson Platform Benchmarks
+
+#### NVIDIA Jetson Orin NX
+- **AI Performance**: 77 TOPS (INT8) / 200 TOPS (INT4)
+- **CPU Performance**: 35,000+ DMIPS (estimated)
+- **Memory Bandwidth**: 204.8 GB/s
+- **FP32 Performance**: 275 GFLOPS
+- **FP16 Performance**: 550 GFLOPS
+
+#### NVIDIA Jetson AGX Xavier
+- **AI Performance**: 32 TOPS (INT8)
+- **CPU Performance**: 25,000+ DMIPS (estimated)
+- **Memory Bandwidth**: 137 GB/s
+- **FP32 Performance**: 11 TFLOPS
+- **FP16 Performance**: 22 TFLOPS
+
+### ROS 2 Performance Metrics
+
+#### Message Throughput
+- **Intra-process communication**: 1-2 microseconds latency
+- **Inter-process communication**: 50-200 microseconds latency
+- **Network communication (localhost)**: 200-500 microseconds latency
+- **Maximum message rate**: 100K+ messages/second for simple types
+
+#### Node Discovery
+- **Node discovery time**: < 1 second under normal conditions
+- **Topic advertisement**: < 100ms average
+- **Service call latency**: 1-10ms for local services
+
+## Simulation Performance
+
+### Gazebo Garden
+- **Real-time Factor**: 0.8-1.0x with default physics settings
+- **Maximum supported robots**: 10-20 robots in complex environment
+- **Sensor update rates**:
+  - Camera: 30-60 Hz at 640x480 resolution
+  - LiDAR: 10-20 Hz with 360° scan
+  - IMU: 100-200 Hz
+
+### Physics Simulation
+- **ODE Physics Engine**:
+  - Update rate: 1000 Hz (default)
+  - Accuracy: Sufficient for basic robot simulation
+  - Stability: Good for wheeled robots, requires tuning for legged systems
+
+- **Bullet Physics Engine**:
+  - Update rate: 1000 Hz (default)
+  - Accuracy: Higher than ODE for complex collisions
+  - Performance: 10-15% slower than ODE
+
+## Perception System Benchmarks
+
+### Computer Vision Performance
+- **OpenCV operations**:
+  - Image filtering: < 1ms for 640x480 image
+  - Feature detection: 5-15ms for 640x480 image
+  - Object detection (CPU): 50-200ms per frame
+  - Object detection (GPU): 10-50ms per frame
+
+### Deep Learning Inference
+- **YOLOv5 (Jetson Orin NX)**:
+  - YOLOv5s: 15-20 FPS at 640x640
+  - YOLOv5m: 8-12 FPS at 640x640
+  - YOLOv5l: 4-6 FPS at 640x640
+
+- **MobileNet SSD**:
+  - 20-30 FPS at 300x300 input
+  - 2-3W power consumption
+
+### Point Cloud Processing
+- **PCL Operations**:
+  - Point cloud filtering: 1-5ms for 10,000 points
+  - Ground plane detection: 10-20ms for 10,000 points
+  - Object clustering: 15-30ms for 10,000 points
+
+## Navigation and Planning Performance
+
+### Path Planning Algorithms
+- **A* Algorithm**:
+  - Grid size 100x100: 5-10ms average
+  - Grid size 500x500: 50-100ms average
+  - Success rate: >95% for uncluttered environments
+
+- **RRT (Rapidly-exploring Random Tree)**:
+  - Planning time: 10-50ms for simple environments
+  - Success rate: >90% for static environments
+  - Memory usage: ~1MB for 1000 nodes
+
+### Navigation Stack
+- **AMCL Localization**:
+  - Update rate: 10-20 Hz
+  - Accuracy: 2-5cm in indoor environments
+  - Particle count: 100-1000 particles (adjustable)
+
+- **Costmap2D**:
+  - Update rate: 10-15 Hz for local costmap
+  - Memory usage: 2-5MB per costmap layer
+  - Resolution: Configurable (typically 5-10cm)
+
+## Control System Performance
+
+### PID Controller Performance
+- **Update rate**: 50-200 Hz achievable
+- **Response time**: < 10ms for stable systems
+- **Steady-state error**: < 1% for well-tuned controllers
+
+### Trajectory Execution
+- **Joint trajectory controller**:
+  - Following error: < 1 degree for position control
+  - Update rate: 100-200 Hz
+  - Command delay: < 5ms
+
+## Hardware Performance
+
+### Motor Control
+- **Servo response time**: 10-50ms depending on load
+- **Encoder resolution**: 4096 positions (12-bit) for Dynamixel servos
+- **Position accuracy**: ±0.088° for high-resolution servos
+
+### Sensor Data Rates
+- **IMU (MPU9250)**:
+  - Accelerometer: Up to 4kHz
+  - Gyroscope: Up to 8kHz
+  - Magnetometer: Up to 100Hz
+  - Typical usage: 100-200Hz
+
+- **LiDAR (RPLIDAR A1)**:
+  - Sample rate: 2000 samples/s
+  - Scan frequency: 5-10 Hz
+  - Range accuracy: ±20mm
+
+## Communication Performance
+
+### Network Communication
+- **WiFi (802.11ac)**:
+  - Bandwidth: 200-500 Mbps theoretical
+  - Latency: 10-50ms typical
+  - Range: 30-50m indoors
+
+- **Ethernet**:
+  - Bandwidth: 100Mbps-2.5Gbps
+  - Latency: < 1ms for local network
+  - Reliability: >99.9% packet delivery
+
+### Inter-Process Communication
+- **Shared Memory**:
+  - Bandwidth: 1-5 GB/s
+  - Latency: < 1μs
+  - Best for high-frequency data exchange
+
+- **Message Queues**:
+  - Bandwidth: 100-500 MB/s
+  - Latency: 1-10μs
+  - Good for inter-process communication
+
+## Power Consumption Benchmarks
+
+### Jetson Platform Power
+- **Jetson Orin NX**:
+  - Idle: 3-5W
+  - Light load: 8-12W
+  - Full AI load: 15-25W
+
+- **Jetson AGX Xavier**:
+  - Idle: 5-8W
+  - Light load: 10-15W
+  - Full AI load: 15-30W
+
+### Robot Platform Power
+- **Motors (standby)**: 0.5-1W per motor
+- **Motors (active)**: 5-20W per motor (depending on load)
+- **Sensors**: 1-5W total
+- **Communication**: 1-3W
+- **Total platform**: 20-50W typical operation
+
+## Memory Usage
+
+### Application Memory Footprint
+- **Basic ROS 2 node**: 10-50MB
+- **Navigation stack**: 200-500MB
+- **Perception pipeline**: 300-800MB
+- **Full robot system**: 500-1200MB
+
+### Real-time Constraints
+- **Critical tasks**: < 5ms response time
+- **High priority**: < 20ms response time
+- **Normal priority**: < 100ms response time
+- **Low priority**: < 1000ms response time
+
+## Performance Optimization Guidelines
+
+### Best Practices
+1. **Reduce message frequency** for non-critical data
+2. **Use appropriate data types** (e.g., compressed images)
+3. **Implement proper threading** for I/O operations
+4. **Profile applications** regularly using tools like `htop`, `perf`, or `ros2 topic hz`
+5. **Optimize algorithms** for your specific use case
+6. **Use hardware acceleration** when available (GPU, DLA)
+
+### Monitoring Tools
+- **System monitoring**: `htop`, `iotop`, `nvidia-smi`
+- **ROS 2 tools**: `ros2 topic hz`, `ros2 run plotjuggler plotjuggler`
+- **Profiling**: `perf`, `valgrind`, `gprof`
+
+These benchmarks provide a baseline for performance expectations in Physical AI systems. Actual performance may vary based on specific implementation, environmental conditions, and system configuration.

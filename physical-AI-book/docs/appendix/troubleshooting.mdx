@@ -1,2 +1,198 @@
 # Troubleshooting Guide
-Content will be added later.
+
+This guide provides solutions to common issues encountered when working with Physical AI & Humanoid Robotics systems.
+
+## ROS 2 Common Issues
+
+### Nodes Not Communicating
+**Problem**: ROS 2 nodes are unable to discover each other.
+**Solution**:
+- Check that nodes are on the same ROS_DOMAIN_ID
+- Verify network configuration and firewall settings
+- Ensure both nodes are running with the same RMW implementation
+- Use `ros2 topic list` to verify topics are available
+
+### Package Not Found
+**Problem**: `Package 'package_name' not found` error when building or running.
+**Solution**:
+- Verify the package is in your workspace: `find ~/ros2_ws/src -name package.xml | grep package_name`
+- Source your workspace: `source install/setup.bash`
+- Clean and rebuild: `rm -rf build install log && colcon build`
+
+### Permission Denied Errors
+**Problem**: Permission denied when accessing hardware or running nodes.
+**Solution**:
+- Add user to dialout group: `sudo usermod -a -G dialout $USER`
+- Check file permissions: `ls -la /dev/ttyUSB*`
+- Log out and log back in for group changes to take effect
+
+## Simulation Issues
+
+### Gazebo Not Starting
+**Problem**: Gazebo fails to launch or crashes immediately.
+**Solution**:
+- Check graphics drivers: `nvidia-smi` (for NVIDIA) or `glxinfo | grep renderer`
+- Install proper graphics libraries: `sudo apt install nvidia-prime mesa-utils`
+- Try software rendering: `export LIBGL_ALWAYS_SOFTWARE=1` (may be slow)
+
+### Robot Falls Through Ground
+**Problem**: Robot model falls through the ground plane in simulation.
+**Solution**:
+- Verify inertial properties in URDF are properly configured
+- Check that `<collision>` and `<visual>` tags are correctly defined
+- Ensure mass and inertia values are reasonable
+
+### Slow Simulation Speed
+**Problem**: Simulation runs significantly slower than real-time.
+**Solution**:
+- Reduce physics update rate in world file
+- Simplify collision meshes
+- Close other CPU-intensive applications
+- Check real-time factor in Gazebo GUI
+
+## Hardware Integration Issues
+
+### Jetson Device Not Detected
+**Problem**: Jetson board not recognized by development system.
+**Solution**:
+- Check USB connection and cable quality
+- Verify USB driver installation: `lsusb`
+- Try different USB port
+- Check power supply adequacy for Jetson model
+
+### Sensor Calibration Problems
+**Problem**: Sensors provide inaccurate readings or fail to initialize.
+**Solution**:
+- Verify sensor connections and power supply
+- Check I2C/SPI bus configuration: `i2cdetect -y -r 1`
+- Recalibrate sensors following manufacturer guidelines
+- Update firmware if available
+
+### Motor Control Issues
+**Problem**: Motors not responding or moving erratically.
+**Solution**:
+- Check PWM signal timing and voltage levels
+- Verify motor driver connections
+- Test with simple test code before integrating into ROS
+- Check for electrical noise interference
+
+## Computer Vision Issues
+
+### Camera Not Detected
+**Problem**: Camera device not found or fails to initialize.
+**Solution**:
+- Check camera connection: `v4l2-ctl --list-devices`
+- Verify device permissions: `ls -la /dev/video*`
+- Test with basic OpenCV code:
+  ```python
+  import cv2
+  cap = cv2.VideoCapture(0)
+  ret, frame = cap.read()
+  print(f"Frame captured: {ret}")
+  ```
+
+### Poor Recognition Accuracy
+**Problem**: Vision algorithms fail to detect objects reliably.
+**Solution**:
+- Collect more diverse training data
+- Adjust lighting conditions
+- Fine-tune model parameters
+- Verify camera calibration
+
+## Network and Communication Issues
+
+### High Latency
+**Problem**: Delay in robot response to commands or sensor feedback.
+**Solution**:
+- Check network bandwidth utilization
+- Use wired connection instead of Wi-Fi when possible
+- Implement data compression for high-bandwidth streams
+- Optimize message frequency and size
+
+### Connection Drops
+**Problem**: Intermittent disconnections between robot and control system.
+**Solution**:
+- Improve wireless signal strength
+- Implement heartbeat/keep-alive mechanisms
+- Add reconnection logic to your code
+- Monitor network stability
+
+## Performance Optimization
+
+### High CPU Usage
+**Problem**: System becomes unresponsive due to high CPU load.
+**Solution**:
+- Profile code to identify bottlenecks: `htop`, `perf`
+- Reduce update frequencies for non-critical processes
+- Use multi-threading appropriately
+- Consider hardware acceleration (GPU/NPU) for computationally intensive tasks
+
+### Memory Leaks
+**Problem**: Gradual increase in memory usage over time.
+**Solution**:
+- Use memory profiling tools: `valgrind`, `heaptrack`
+- Properly clean up allocated memory
+- Check for circular references in callbacks
+- Implement garbage collection for long-running processes
+
+## Build and Installation Issues
+
+### Compilation Errors
+**Problem**: Build fails with C++ compilation errors.
+**Solution**:
+- Verify all dependencies are installed
+- Check CMakeLists.txt for correct package dependencies
+- Ensure compatible compiler versions
+- Clean build directory and rebuild
+
+### Missing Dependencies
+**Problem**: Build fails due to missing packages or libraries.
+**Solution**:
+- Update package lists: `sudo apt update`
+- Install missing packages: `sudo apt install package-name`
+- Use rosdep to install dependencies: `rosdep install --from-paths src --ignore-src -r -y`
+
+## Debugging Tips
+
+### Enable Verbose Logging
+```bash
+export RCUTILS_LOGGING_SEVERITY_THRESHOLD=DEBUG
+ros2 run package_name node_name
+```
+
+### Use ROS 2 Tools
+```bash
+# Monitor topics
+ros2 topic echo /topic_name
+
+# Check system graph
+ros2 node list
+ros2 topic list
+
+# Monitor performance
+ros2 run plotjuggler plotjuggler
+```
+
+### Common Debugging Commands
+```bash
+# Check network setup
+echo $ROS_DOMAIN_ID
+echo $ROS_LOCALHOST_ONLY
+ros2 daemon status
+
+# Verify workspace
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+colcon build --symlink-install --packages-select your_package
+```
+
+## When to Seek Help
+
+If you encounter issues not covered in this guide:
+
+1. Check the official documentation for ROS 2, Gazebo, and your specific hardware
+2. Search online forums and communities (ROS Answers, GitHub issues)
+3. Consult with colleagues or mentors
+4. Consider the problem statement carefully - what changed before the issue appeared?
+
+Remember: Most robotics issues are environmental, configuration, or integration problems rather than fundamental flaws in your code. Systematic debugging and methodical approach will resolve most issues.

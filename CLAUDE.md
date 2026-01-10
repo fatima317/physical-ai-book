@@ -212,6 +212,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - Python 3.11 (ROS 2 Humble), JavaScript/TypeScript (MDX processing), C++ (ROS 2 nodes) + ROS 2 Humble, Gazebo Garden, Isaac Sim, Node.js, MDX, Docker (001-physical-ai-book)
 - File-based (modules, documentation, configuration) (001-physical-ai-book)
+- JavaScript/TypeScript (Node.js LTS), Python 3.11 (ROS 2 Humble) + Docusaurus 3.x, React 18.x, ROS 2 Humble, Gazebo Garden, NVIDIA Isaac Sim (001-rag-chatbot-embedding)
+- File-based (MDX documents, configuration files, assets) (001-rag-chatbot-embedding)
 
 ## Recent Changes
 - 001-physical-ai-book: Added Python 3.11 (ROS 2 Humble), JavaScript/TypeScript (MDX processing), C++ (ROS 2 nodes) + ROS 2 Humble, Gazebo Garden, Isaac Sim, Node.js, MDX, Docker

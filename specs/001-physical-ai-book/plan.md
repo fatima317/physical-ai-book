@@ -7,19 +7,19 @@
 
 ## Summary
 
-Development of an interactive, personalized Physical AI & Humanoid Robotics book with 6 modules (Intro + 4 main modules + Capstone + Appendix). The system includes specialized AI subagents (ros_expert, gazebo_builder, isaac_trainer, vla_planner, hardware_guide), interactive MDX elements for personalization and Urdu translation, and follows the hardware/software stack of Jetson NX, ROS 2 Humble, Gazebo, and Isaac Sim. Implementation follows a phased approach (Research → Foundation → Analysis → Synthesis) with comprehensive quality validation per module.
+Development of an interactive, personalized Physical AI & Humanoid Robotics book using Docusaurus with MDX-based content structure. The system includes 6 comprehensive modules (Intro + 4 main modules + Capstone + Appendix) with detailed week-by-week content organized in MDX files. The architecture includes specialized AI subagents (ros_expert, gazebo_builder, isaac_trainer, vla_planner, hardware_guide) for content generation, interactive MDX elements for personalization and Urdu translation, and integration points for RAG chatbot, authentication, and personalization features. The system follows the hardware/software stack of Jetson NX, ROS 2 Humble, Gazebo, and Isaac Sim. Implementation follows a phased approach (Research → Foundation → Analysis → Synthesis) with comprehensive quality validation per module and includes proper navigation via sidebars.js configuration.
 
 ## Technical Context
 
-**Language/Version**: Python 3.11 (ROS 2 Humble), JavaScript/TypeScript (MDX processing), C++ (ROS 2 nodes)
-**Primary Dependencies**: ROS 2 Humble, Gazebo Garden, Isaac Sim, Node.js, MDX, Docker
-**Storage**: File-based (modules, documentation, configuration)
-**Testing**: pytest (Python), Jest (JavaScript), hardware validation scripts
-**Target Platform**: Jetson NX (primary), Ubuntu 22.04 (development), Isaac Sim (simulation)
-**Project Type**: Interactive educational platform with web interface
-**Performance Goals**: Fast module loading (<2s), responsive subagent interactions (<5s), accurate code example execution (95% success rate)
-**Constraints**: Jetson NX hardware limitations, real-time robotics requirements, multilingual content accuracy (90%+)
-**Scale/Scope**: 6 primary modules, 5 subagents, 3+ skills, 100+ interactive elements, 1000+ students capacity
+**Language/Version**: Python 3.11 (ROS 2 Humble), JavaScript/TypeScript (Docusaurus/MDX processing), C++ (ROS 2 nodes)
+**Primary Dependencies**: ROS 2 Humble, Gazebo Garden, Isaac Sim, Node.js, Docusaurus 3.x, React 18.x, MDX, Docker
+**Storage**: File-based (MDX modules, documentation, configuration), with potential for vector database (Qdrant) for RAG features
+**Testing**: pytest (Python), Jest (JavaScript), hardware validation scripts, Docusaurus integration tests
+**Target Platform**: Web-based Docusaurus site (primary), Jetson NX (development/simulation), Ubuntu 22.04 (development), Isaac Sim (simulation)
+**Project Type**: Interactive educational platform with web interface and Docusaurus-based textbook
+**Performance Goals**: Fast module loading (<2s), responsive subagent interactions (<5s), accurate code example execution (95% success rate), Docusaurus site build time (<30s)
+**Constraints**: Jetson NX hardware limitations, real-time robotics requirements, multilingual content accuracy (90%+), Docusaurus site performance
+**Scale/Scope**: 6 primary modules, 50+ MDX chapters/files, 5 subagents, 3+ skills, 100+ interactive elements, 1000+ students capacity
 
 ## Constitution Check
 
@@ -57,17 +57,53 @@ specs/001-physical-ai-book/
 
 ```text
 physical-AI-book/
+├── docusaurus.config.js     # Docusaurus configuration with MDX support
+├── sidebars.js              # Navigation structure for all modules/chapters
+├── package.json             # Docusaurus project dependencies
 ├── docs/                    # Documentation following constitution
-│   ├── modules/             # 6 modules (Intro + 4 main + Capstone + Appendix)
-│   │   ├── introduction/
-│   │   ├── module-1-ros/
-│   │   ├── module-2-simulation/
-│   │   ├── module-3-perception/
-│   │   ├── module-4-ai-planning/
-│   │   ├── capstone/
-│   │   └── appendix/
+│   ├── intro.md             # Introduction to Physical AI & Humanoid Robotics
+│   ├── module-1-ros/        # Module 1: ROS 2 Fundamentals
+│   │   ├── index.mdx        # Module overview
+│   │   ├── ros-basics.mdx   # ROS 2 basics and architecture
+│   │   ├── nodes-topics.mdx # Nodes, topics, services, actions
+│   │   └── practical-exercises.mdx # ROS 2 practical exercises
+│   ├── module-2-simulation/ # Module 2: Gazebo & Unity Simulation
+│   │   ├── index.mdx        # Module overview
+│   │   ├── gazebo-setup.mdx # Gazebo Garden setup and configuration
+│   │   ├── unity-integration.mdx # Unity integration (if applicable)
+│   │   └── simulation-exercises.mdx # Simulation practical exercises
+│   ├── module-3-perception/ # Module 3: Perception Systems
+│   │   ├── index.mdx        # Module overview
+│   │   ├── sensors.mdx      # Sensor integration and processing
+│   │   ├── computer-vision.mdx # Computer vision techniques
+│   │   └── perception-exercises.mdx # Perception practical exercises
+│   ├── module-4-ai-planning/ # Module 4: AI Planning & Control
+│   │   ├── index.mdx        # Module overview
+│   │   ├── motion-planning.mdx # Motion planning algorithms
+│   │   ├── control-systems.mdx # Control systems for humanoid robots
+│   │   └── ai-planning-exercises.mdx # AI planning practical exercises
+│   ├── capstone/            # Capstone project module
+│   │   └── index.mdx        # Capstone project overview and requirements
+│   ├── appendix/            # Additional reference materials
+│   │   ├── glossary.mdx     # Technical terms and definitions
+│   │   ├── hardware-specs.mdx # Hardware specifications and requirements
+│   │   └── troubleshooting.mdx # Troubleshooting guide
 │   ├── setup-guides/        # Hardware setup guides
+│   │   ├── jetson-nx-setup.mdx # Jetson NX setup instructions
+│   │   └── sensor-integration.mdx # Sensor integration guide
 │   └── api-reference/       # API documentation
+│       └── ros-api.mdx      # ROS 2 API reference
+├── src/
+│   ├── components/          # Custom React components
+│   │   ├── PersonalizationButton/ # Personalization UI component
+│   │   ├── AuthButton/      # Authentication UI component
+│   │   ├── TranslationToggle/ # Translation UI component
+│   │   └── RagChatbot/      # RAG chatbot integration component
+│   ├── pages/               # Additional pages if needed
+│   └── css/                 # Custom styles
+├── static/                  # Static assets
+│   ├── img/                 # Images and diagrams
+│   └── videos/              # Video content
 ├── src/
 │   ├── models/              # Data models (LearningModule, UserProfile, etc.)
 │   ├── services/            # Core services (personalization, translation, validation)

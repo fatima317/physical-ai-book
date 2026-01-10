@@ -1,0 +1,150 @@
+---
+sidebar_position: 7
+title: Hardware Requirements
+---
+
+# Hardware Requirements
+
+## System Architecture Overview
+
+This section outlines the complete hardware requirements for implementing the Physical AI & Humanoid Robotics curriculum, with options ranging from desktop development environments to full humanoid robot platforms.
+
+## Digital Twin Workstation
+
+### High-Performance Development Environment
+- **CPU**: Intel i9-13900K or AMD Ryzen 9 7950X (24+ cores recommended)
+- **GPU**: NVIDIA RTX 4090 or equivalent (24GB+ VRAM)
+- **RAM**: 64GB DDR5-5600MHz
+- **Storage**: 2TB NVMe SSD + 4TB additional storage
+- **Network**: 10GbE networking capability
+- **OS**: Ubuntu 22.04 LTS with ROS 2 Humble Hawksbill
+
+### Purpose
+- Real-time simulation of complex robotic systems
+- Training of neural networks and perception models
+- Development and testing before hardware deployment
+- Digital twin creation and validation
+
+## Physical AI Edge Kit
+
+### Compact Robot Development Platform
+- **Compute**: NVIDIA Jetson AGX Orin (64GB)
+- **Robot Platform**: TurtleBot 4 or equivalent differential drive base
+- **Sensors**:
+  - RGB-D camera (Intel RealSense D455 or equivalent)
+  - IMU for orientation sensing
+  - LIDAR for navigation
+  - Additional tactile sensors as needed
+- **Actuators**: Servos for manipulation or additional mobility
+- **Connectivity**: WiFi 6E and Ethernet
+
+### Purpose
+- Rapid prototyping of Physical AI algorithms
+- Testing of simulation-to-reality transfer
+- Edge deployment of AI models
+- Educational platform for robotics fundamentals
+
+## Robot Lab Options
+
+### Option A: Research Laboratory Setup
+- **Robots**: 3-5 humanoid robots (Pepper, NAO, or custom)
+- **Workstations**: 5 high-performance PCs with RTX GPUs
+- **Networking**: Dedicated gigabit network with centralized management
+- **Safety Systems**: Emergency stop systems, safety barriers
+- **Peripherals**: VR/AR equipment for teleoperation, motion capture system
+- **Support Equipment**: Workshop tools, 3D printers, electronics lab
+
+### Option B: Education-Focused Classroom
+- **Robots**: 10-15 TurtleBot 4 units or equivalent
+- **Workstations**: Student workstations with dual monitors
+- **Networking**: Standard classroom networking with robot connectivity
+- **Charging Stations**: Automated charging stations for fleet management
+- **Teaching Aids**: Projector, whiteboards, demonstration areas
+
+### Option C: Hybrid Development Lab
+- **Mix of Platforms**: 2-3 advanced humanoid robots + 8-10 educational robots
+- **Workstations**: Mix of high-performance and standard development machines
+- **Simulation Hardware**: Dedicated servers for large-scale simulation
+- **Development Tools**: 3D printers, electronics fabrication tools
+- **Testing Areas**: Various terrain types for different robot capabilities
+
+## Architecture Summary
+
+| Component | Minimum | Recommended | Research Grade |
+|-----------|---------|-------------|----------------|
+| CPU | i7-12700 | i9-13900K | Dual Xeon Gold |
+| GPU | RTX 3070 | RTX 4090 | Dual RTX 6000 Ada |
+| RAM | 32GB | 64GB | 128GB+ |
+| Storage | 1TB SSD | 2TB NVMe | 10TB+ RAID |
+| Network | Gigabit | 10GbE | 25GbE+ |
+
+## Cloud-Native Option
+
+### For Distributed Teams or Limited Local Hardware
+
+#### Infrastructure Requirements
+- **Cloud Provider**: AWS, Azure, or GCP with GPU instances
+- **Instance Types**:
+  - Development: g5.xlarge or equivalent (RTX A5000 GPU)
+  - Training: p4d.24xlarge or equivalent (8xA100 GPUs)
+  - Simulation: r5.24xlarge or equivalent (high memory)
+- **Storage**: High-performance cloud storage for datasets and models
+- **Network**: VPN access for secure robot control
+
+#### Advantages
+- Scalable computing resources
+- Centralized development environment
+- Easy collaboration across teams
+- Reduced local hardware costs
+
+#### Limitations
+- Network latency for real-time control
+- Ongoing operational costs
+- Limited access to physical hardware
+
+## Economy Jetson Kit
+
+### Cost-Effective Learning Platform
+
+| Component | Model | Approx. Cost | Purpose |
+|-----------|-------|--------------|---------|
+| Compute | Jetson Orin Nano | $100 | Basic AI inference |
+| Base Platform | TurtleBot 4 Lite | $2,500 | Mobile platform |
+| Camera | Arducam IMX477 | $150 | Vision input |
+| Battery | 11.1V 5200mAh LiPo | $80 | Power system |
+| Chassis Parts | Custom 3D prints | $200 | Structural elements |
+| **Total** | | **~$3,000** | **Complete learning kit** |
+
+### Suitable For
+- Individual learning and experimentation
+- Small-scale research projects
+- Proof-of-concept development
+- Budget-conscious educational institutions
+
+## The Latency Trap
+
+### Critical Timing Considerations
+
+#### Real-Time Performance Requirements
+- **Control Loop**: 100Hz (10ms) minimum for stable robot control
+- **Perception Pipeline**: 30Hz (33ms) for real-time visual processing
+- **Planning Algorithm**: 10-20Hz depending on complexity
+- **Communication**: Sub-`1ms` for safety-critical systems
+
+#### Network Latency Implications
+- **Local Network**: 0.1-1ms acceptable for most operations
+- **Remote Control**: 10-50ms threshold for human-robot interaction
+- **Cloud Processing**: 100ms+ may cause perceptible delays
+- **Safety Systems**: Must respond in `<5ms` regardless of other loads
+
+#### Buffering Strategies
+- **Input Buffering**: Maintain 3-5 frames for smooth processing
+- **Output Buffering**: Pre-compute trajectories with safety margins
+- **Fallback Modes**: Autonomous safety behaviors when latency exceeds limits
+
+### Testing for Latency
+Regular benchmarking of system latency is essential:
+- Monitor round-trip times for all critical communications
+- Test under maximum expected computational loads
+- Verify safety systems remain responsive during peak usage
+- Plan for graceful degradation when latency increases

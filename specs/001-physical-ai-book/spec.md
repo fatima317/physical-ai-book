@@ -1,20 +1,24 @@
-# Feature Specification: Physical AI & Humanoid Robotics Book
+# Feature Specification: Physical AI & Humanoid Robotics Book with Integrated RAG Chatbot
 
 **Feature Branch**: `001-physical-ai-book`
 **Created**: 2025-12-10
 **Status**: Draft
-**Input**: User description: "Specify detailed requirements for the Physical AI book.
-Include:
-- Modules/chapters outline (4 modules + Intro + Capstone + Appendix)
-- Subagent responsibilities:
-    - ros_expert: ROS 2 code generation
-    - gazebo_builder: Simulation creation
-    - isaac_trainer: Isaac Sim perception & VSLAM
-    - vla_planner: LLM-to-action pipelines (Whisper)
-    - hardware_guide: Jetson & sensor setup
-- Skills for recurring workflows (chapter writing, code formatting, personalization)
-- Interactive MDX elements (personalizeChapter, translateToUrdu)
-- Hardware/software validation steps"
+**Input**: User description: "Update the existing spec 001-physical-ai-book to include COMPLETE detailed content requirements for the full Physical AI & Humanoid Robotics textbook with integrated RAG chatbot.
+
+Add the following major sections/chapters exactly matching the provided course structure:
+
+- Quarter Overview and Modules 1-4 (ROS 2, Gazebo & Unity, NVIDIA Isaac, VLA)
+- Why Physical AI Matters
+- Learning Outcomes
+- Weekly Breakdown (detailed for Weeks 1-13, including all bullet points on foundations, ROS fundamentals, Gazebo simulation, Isaac platform, Humanoid development, Conversational Robotics)
+- Assessments
+- Hardware Requirements (full details: Digital Twin Workstation, Physical AI Edge Kit, Robot Lab options A/B/C, Architecture Summary table, Cloud-Native Option, Economy Jetson Kit table, Latency Trap)
+
+Each chapter/section should be educational, include code snippets (ROS 2 Python examples, URDF examples), diagrams (use Mermaid for kinematics, tables for hardware), key terms, and learning checkpoints.
+
+Ensure the book uses Docusaurus MDX format, with sidebar navigation, and supports future personalization/translation.
+
+Additionally, implement an integrated RAG chatbot that can answer questions based on the book's content."
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -78,12 +82,46 @@ An advanced robotics practitioner wants to explore LLM-to-action pipelines and p
 
 ---
 
+### User Story 5 - Comprehensive Course Structure (Priority: P1)
+
+A student enrolled in the Physical AI & Humanoid Robotics course needs access to a structured curriculum with detailed weekly breakdowns covering all essential topics from ROS fundamentals to conversational robotics. The user navigates through the quarter-long course with clear learning objectives and assessments.
+
+**Why this priority**: The structured curriculum is fundamental to the educational value of the book, providing a clear pathway for students to follow.
+
+**Independent Test**: The system can be tested by having a student progress through the full 13-week curriculum, demonstrating mastery of all core concepts.
+
+**Acceptance Scenarios**:
+
+1. **Given** a student starting the course, **When** they access the Quarter Overview and Modules 1-4, **Then** they can clearly understand the progression from ROS 2 fundamentals to advanced VLA implementations
+2. **Given** a student working through weekly content, **When** they complete weekly assignments and checkpoints, **Then** they demonstrate progressive mastery of robotics concepts
+
+---
+
+### User Story 6 - Hardware Integration and Requirements (Priority: P2)
+
+A robotics educator or student needs detailed hardware specifications and setup guidance for the Physical AI course. The user accesses comprehensive hardware requirements documentation to understand different lab configurations and equipment options.
+
+**Why this priority**: Proper hardware setup is essential for practical implementation of the concepts taught in the book.
+
+**Independent Test**: The system can be tested by having users successfully set up their hardware environment based on the documentation provided.
+
+**Acceptance Scenarios**:
+
+1. **Given** a user reviewing hardware requirements, **When** they select from Digital Twin Workstation, Physical AI Edge Kit, or Robot Lab options, **Then** they can make informed decisions about their hardware investment
+2. **Given** a user following hardware setup guides, **When** they encounter the Latency Trap section, **Then** they understand the timing considerations for real-world robotics applications
+
+---
+
 ### Edge Cases
 
 - What happens when a user switches between different hardware platforms during learning?
 - How does the system handle complex code generation requests that may result in non-functional examples?
 - What occurs when the personalization algorithm encounters a user with mixed skill levels across different robotics domains?
 - How does the system handle translation validation for highly technical robotics terminology in Urdu?
+- What happens when a user skips weeks or modules in the structured curriculum?
+- How does the system handle users with different educational backgrounds accessing the same content?
+- What occurs when hardware requirements conflict with user budget constraints?
+- How does the system handle outdated hardware specifications over time?
 
 ## Requirements *(mandatory)*
 
@@ -104,6 +142,21 @@ An advanced robotics practitioner wants to explore LLM-to-action pipelines and p
 - **FR-013**: Skills system MUST handle recurring workflows for chapter writing, code formatting, and personalization
 - **FR-014**: System MUST organize content into 6 modules: Introduction, 4 main modules, Capstone, and Appendix
 - **FR-015**: System MUST ensure code examples are reproducible on the target Jetson NX hardware platform
+- **FR-016**: System MUST include comprehensive Quarter Overview and Modules 1-4 covering ROS 2, Gazebo & Unity, NVIDIA Isaac, and VLA
+- **FR-017**: System MUST provide detailed "Why Physical AI Matters" section with educational content and examples
+- **FR-018**: System MUST define clear Learning Outcomes with measurable competencies for each module
+- **FR-019**: System MUST include detailed Weekly Breakdown for Weeks 1-13 with foundations, ROS fundamentals, Gazebo simulation, Isaac platform, Humanoid development, and Conversational Robotics
+- **FR-020**: System MUST provide Assessment methods with rubrics and evaluation criteria
+- **FR-021**: System MUST document comprehensive Hardware Requirements with Digital Twin Workstation, Physical AI Edge Kit, Robot Lab options A/B/C, Architecture Summary table, Cloud-Native Option, Economy Jetson Kit table, and Latency Trap explanations
+- **FR-022**: System MUST include code snippets (ROS 2 Python examples, URDF examples) throughout all chapters
+- **FR-023**: System MUST incorporate diagrams (Mermaid for kinematics, tables for hardware) in educational content
+- **FR-024**: System MUST provide Key Terms definitions at the beginning or end of each chapter
+- **FR-025**: System MUST include Learning Checkpoints with quizzes, exercises, and practical applications
+- **FR-026**: System MUST use Docusaurus MDX format for all content delivery
+- **FR-027**: System MUST implement sidebar navigation for easy content access
+- **FR-028**: System MUST support future personalization and translation capabilities
+- **FR-029**: System MUST include hands-on exercises and practical implementations for each concept
+- **FR-030**: System MUST provide troubleshooting guides for common hardware and software issues
 
 ### Key Entities
 
@@ -113,6 +166,10 @@ An advanced robotics practitioner wants to explore LLM-to-action pipelines and p
 - **Interactive Element**: Dynamic content component that responds to user inputs (personalization, translation); affects Content Delivery
 - **Hardware Configuration**: Specifications for Jetson NX setup with sensors and actuators; connects to Simulation Environment
 - **Skill Workflow**: Reusable process for content creation, formatting, and personalization; used by Content Management system
+- **Quarter Overview**: Educational framework defining the 13-week course structure with Modules 1-4; connects to Learning Outcomes and Weekly Breakdown
+- **Course Content**: Educational material covering ROS 2, Gazebo & Unity, NVIDIA Isaac, VLA, and advanced robotics concepts; organized by modules and weeks
+- **Assessment Method**: Evaluation approach for measuring student progress and competency; linked to Learning Outcomes
+- **Hardware Requirement**: Specification for equipment needed for practical implementation; connects to Lab Options and Setup Guides
 
 ## Clarifications
 
@@ -136,3 +193,10 @@ An advanced robotics practitioner wants to explore LLM-to-action pipelines and p
 - **SC-006**: Urdu translation maintains 90% technical accuracy compared to English content
 - **SC-007**: All code examples run successfully on Jetson NX hardware in at least 95% of attempts
 - **SC-008**: Users can implement complete LLM-to-action pipelines using Whisper integration within 4 hours of study
+- **SC-009**: Students can complete the full 13-week curriculum and demonstrate proficiency in all core robotics concepts
+- **SC-010**: 80% of students achieve passing grades on assessments based on the defined Learning Outcomes
+- **SC-011**: Users can successfully navigate the complete course structure using the Docusaurus MDX navigation system
+- **SC-012**: Hardware requirements documentation enables 90% of users to properly configure their equipment for practical exercises
+- **SC-013**: Learning checkpoints and assessments provide adequate feedback for 85% of students to identify knowledge gaps
+- **SC-014**: Code snippets and examples function correctly in 95% of user implementations across different hardware configurations
+- **SC-015**: Visual aids (diagrams, tables, Mermaid charts) enhance comprehension for 80% of users compared to text-only content

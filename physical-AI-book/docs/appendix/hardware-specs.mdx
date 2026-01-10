@@ -1,2 +1,194 @@
 # Hardware Specifications
-Content will be added later.
+
+This document provides detailed technical specifications for the hardware components used in the Physical AI & Humanoid Robotics curriculum.
+
+## Jetson NX Specifications
+
+### NVIDIA Jetson AGX Xavier Developer Kit
+- **GPU**: 512-core NVIDIA Volta GPU with Tensor Cores
+- **CPU**: 8-core ARM v8.2 64-bit Carmel CPU
+- **Memory**: 16GB 256-bit LPDDR4x @ 1376 MHz (~109.9 GB/s)
+- **Storage**: 32GB eMMC 5.1
+- **Video**:
+  - Decode: Up to 2x 4K60 HEVC, 4x 4K30 HEVC, 8x 1080p60 HEVC
+  - Encode: Up to 2x 4K60 HEVC, 4x 4K30 HEVC, 8x 1080p60 HEVC
+- **Connectivity**:
+  - 1x 10/100/1000BASE-T Ethernet
+  - IEEE 802.11 a/b/g/n/ac 2x2 MIMO
+  - Bluetooth 5.0
+- **Power**: 10W / 15W / 30W (software selectable)
+- **Dimensions**: 100mm x 87mm
+
+### NVIDIA Jetson Orin NX (Recommended for Curriculum)
+- **GPU**: 1024-core NVIDIA Ampere GPU with Tensor Cores
+- **CPU**: 6-core ARM Cortex-A78AE v8.2 64-bit CPU
+- **Memory**: 8GB LPDDR5 @ 204.8 GB/s
+- **Storage**: 16GB eMMC 5.1
+- **Video**:
+  - Decode: Up to 2x 4K60 HEVC/H.264, 4x 4K30 HEVC/H.264
+  - Encode: Up to 2x 4K60 HEVC/H.264, 3x 4K30 HEVC/H.264
+- **Connectivity**:
+  - 1x 2.5GBASE-T Ethernet
+  - IEEE 802.11 a/b/g/n/ac 2x2 MIMO
+  - Bluetooth 5.0
+- **Power**: 15W / 25W (software selectable)
+- **Dimensions**: 70mm x 45mm
+
+## Sensor Specifications
+
+### Intel RealSense D455
+- **Stereo Baseline**: 95 mm
+- **FOV**: 87° × 58° × 101° (H×V×D)
+- **Depth Range**: 0.25 m – 11.7 m
+- **Operating Range**: 0.25 m – 9 m (typical)
+- **Resolution**: Up to 1280 × 720
+- **Frame Rate**: Up to 90 FPS
+- **Connectivity**: USB 3.2 Gen 1
+- **Accuracy**: ± 2% at 1 meter
+
+### RGB-D Camera Alternative: Intel RealSense D435
+- **Stereo Baseline**: 50 mm
+- **FOV**: 85° × 55° × 94° (H×V×D)
+- **Depth Range**: 0.22 m – 9.75 m
+- **Resolution**: Up to 1280 × 720
+- **Frame Rate**: Up to 90 FPS
+- **Connectivity**: USB 3.0
+- **Depth Accuracy**: ± 2% at 1 meter
+
+### LiDAR Specifications: Slamtec RPLIDAR A1
+- **Detection Range**: 0.15m – 6.0m
+- **Angular Resolution**: 0.44° to 0.88°
+- **Scanning Frequency**: 5 – 10 Hz
+- **Sample Rate**: 2000 samples/s
+- **Accuracy**: ± 20mm
+- **Laser Wavelength**: 785nm
+- **Laser Power**: < 0.1W
+- **Power Consumption**: < 2W
+
+## Motor Specifications
+
+### Dynamixel X-Series Servos (XL430-W250-T)
+- **Torque**: 1.3 N·m @ 12V, 1.8 N·m @ 16.5V
+- **Speed**: 47 RPM @ 12V, 63 RPM @ 16.5V
+- **Gear Ratio**: 215.2:1
+- **Encoder Resolution**: 4096 positions (12-bit)
+- **Position Accuracy**: ± 0.088°
+- **Communication**: TTL UART
+- **Protocol**: Protocol 2.0
+- **Weight**: 76g
+
+### DC Motors with Encoders (Pololu 37D mm Metal Gearmotor)
+- **Gear Ratio**: 298:1
+- **No-load Speed**: 15 RPM @ 12V
+- **Stall Torque**: 17 kg⋅cm (240 oz⋅in) @ 12V
+- **No-load Current**: 0.22 A
+- **Stall Current**: 4.2 A @ 12V
+- **Encoder Resolution**: 12 CPR quadrature encoder
+- **Motor Weight**: 350g
+
+## Microcontroller Specifications
+
+### Arduino Mega 2560
+- **Microcontroller**: ATmega2560
+- **Operating Voltage**: 5V
+- **Input Voltage (recommended)**: 7-12V
+- **Digital I/O Pins**: 54 (of which 15 provide PWM output)
+- **Analog Input Pins**: 16
+- **DC Current per I/O Pin**: 40 mA
+- **Flash Memory**: 256 KB
+- **SRAM**: 8 KB
+- **EEPROM**: 4 KB
+
+## Communication Protocols
+
+### UART (Serial)
+- **Voltage Levels**: 3.3V or 5V logic
+- **Baud Rates**: Common rates from 9600 to 115200 bps
+- **Max Cable Length**: ~15 meters (RS-232), ~1200 meters (RS-485)
+
+### I2C
+- **Standard Mode**: 100 kbit/s
+- **Fast Mode**: 400 kbit/s
+- **Fast Mode Plus**: 1 Mbit/s
+- **High Speed Mode**: 3.4 Mbit/s
+- **Max Bus Length**: ~1 meter at 100 kbit/s
+
+### SPI
+- **Full Duplex**: Synchronous serial communication
+- **Clock Speeds**: Up to 10+ MHz
+- **4-wire Interface**: MOSI, MISO, SCK, CS
+
+## Power System Specifications
+
+### Power Distribution Board
+- **Input**: 11.1V 5200mAh LiPo Battery
+- **Regulators**:
+  - 5V @ 3A for Raspberry Pi/Microcontrollers
+  - 12V @ 2A for servo motors
+  - 3.3V @ 1A for sensors
+- **Protection**: Reverse polarity, over-current, thermal shutdown
+
+### Battery Specifications
+- **Type**: 3S 11.1V LiPo Battery
+- **Capacity**: 5200mAh
+- **Continuous Discharge**: 30C (156A)
+- **Burst Discharge**: 60C (312A)
+- **Dimensions**: 148 x 43 x 24 mm
+- **Weight**: 390g
+
+## Mechanical Specifications
+
+### Chassis Materials
+- **Main Frame**: Aluminum extrusion (20x20mm) or 3D printed ABS
+- **Wheel Type**: Mecanum wheels or omni wheels (for holonomic movement)
+- **Wheel Diameter**: 100mm standard, 150mm for rough terrain
+- **Ground Clearance**: 25mm minimum
+
+### Actuator Mounting
+- **Servo Horns**: Standard 25-tooth with 4-M2 screws
+- **Brackets**: CNC machined aluminum or 3D printed PLA/ABS
+- **Fasteners**: M3 bolts and nuts for servo mounting
+- **Bearing Support**: Ball bearings for high-load applications
+
+## Performance Benchmarks
+
+### Computation Power
+- **Jetson Orin NX**: 77 TOPS (INT8) AI Performance
+- **CPU Performance**: 35,000+ DMIPS (estimated)
+- **Memory Bandwidth**: 204.8 GB/s
+
+### Real-time Performance
+- **Control Loop**: 100Hz (10ms) achievable for basic control
+- **Vision Processing**: 30Hz (33ms) for CNN inference with optimizations
+- **Planning**: 10-20Hz depending on algorithm complexity
+
+### Communication Latency
+- **Internal Bus (CAN/I2C)**: < 1ms typical
+- **Ethernet (local)**: < 1ms typical
+- **WiFi**: 10-50ms typical
+- **Safety Critical Systems**: < 5ms guaranteed response
+
+## Environmental Specifications
+
+### Operating Temperature
+- **Electronics**: 0°C to 50°C (32°F to 122°F)
+- **Motors**: -10°C to 60°C (14°F to 140°F)
+- **Battery**: -20°C to 60°C (-4°F to 140°F) for operation
+
+### Protection Rating
+- **IP Rating**: IP42 (protection from solid particles and dripping water)
+- **Shock Resistance**: 50G operational, 100G non-operational
+- **Vibration**: 10-500Hz, 2G random vibration
+
+## Upgrade Paths
+
+### Entry Level to Advanced
+- **Compute Upgrade**: From Orin NX to Orin AGX (275 TOPS)
+- **Sensor Upgrade**: Add IMU, GPS, force/torque sensors
+- **Mobility Upgrade**: From differential drive to 4-wheel steering
+- **Manipulation**: Add 5-DOF robotic arm with gripper
+
+### Specialized Configurations
+- **Research Platform**: Add RTK-GPS, external cameras, high-precision encoders
+- **Industrial Grade**: Sealed enclosures, industrial-grade components, redundant systems
+- **Outdoor Capability**: Weatherproofing, larger batteries, ruggedized chassis

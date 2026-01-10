@@ -1,0 +1,679 @@
+---
+sidebar_position: 12
+---
+
+# Week 12: Integration and Deployment
+
+## Learning Objectives
+
+By the end of this week, students will be able to:
+- Integrate multiple robotics subsystems into a cohesive system
+- Implement deployment strategies for physical AI systems
+- Monitor and maintain deployed systems
+- Handle system failures and recovery procedures
+
+## System Integration
+
+In this section, we'll implement the SystemIntegrator class that coordinates between different subsystems:
+
+```python
+#!/usr/bin/env python3
+"""
+System Integration Manager for Physical AI
+Handles coordination between perception, planning, and control systems
+"""
+
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String, Bool
+from geometry_msgs.msg import Twist, Pose
+from sensor_msgs.msg import JointState
+from rcl_interfaces.msg import ParameterDescriptor
+import time
+import threading
+from collections import deque
+import json
+
+class SystemIntegrator(Node):
+    def __init__(self):
+        super().__init__('system_integrator')
+
+        # Subsystem status tracking
+        self.subsystem_status = {
+            'perception': False,
+            'planning': False,
+            'control': False,
+            'navigation': False
+        }
+
+        # Publishers for each subsystem
+        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        self.joint_cmd_pub = self.create_publisher(JointState, '/joint_commands', 10)
+        self.status_pub = self.create_publisher(String, '/system_status', 10)
+
+        # Subscribers for subsystem status
+        self.perception_sub = self.create_subscription(
+            Bool, '/perception/ready', self.perception_callback, 10)
+        self.planning_sub = self.create_subscription(
+            Bool, '/planning/ready', self.planning_callback, 10)
+        self.control_sub = self.create_subscription(
+            Bool, '/control/ready', self.control_callback, 10)
+        self.nav_sub = self.create_subscription(
+            Bool, '/navigation/ready', self.navigation_callback, 10)
+
+        # Service clients for subsystems
+        self.integration_timer = self.create_timer(1.0, self.integration_callback)
+
+        # System state tracking
+        self.system_state = 'IDLE'
+        self.task_queue = deque()
+
+        self.get_logger().info('System Integrator initialized')
+
+    def perception_callback(self, msg):
+        self.subsystem_status['perception'] = msg.data
+        self.get_logger().info(f'Perception subsystem status: {msg.data}')
+
+    def planning_callback(self, msg):
+        self.subsystem_status['planning'] = msg.data
+        self.get_logger().info(f'Planning subsystem status: {msg.data}')
+
+    def control_callback(self, msg):
+        self.subsystem_status['control'] = msg.data
+        self.get_logger().info(f'Control subsystem status: {msg.data}')
+
+    def navigation_callback(self, msg):
+        self.subsystem_status['navigation'] = msg.data
+        self.get_logger().info(f'Navigation subsystem status: {msg.data}')
+
+    def integration_callback(self):
+        # Check if all subsystems are ready
+        all_ready = all(self.subsystem_status.values())
+
+        if all_ready and self.system_state == 'IDLE':
+            self.system_state = 'READY'
+            status_msg = String()
+            status_msg.data = 'SYSTEM_READY'
+            self.status_pub.publish(status_msg)
+            self.get_logger().info('All subsystems ready - system operational')
+        elif not all_ready:
+            self.system_state = 'IDLE'
+            status_msg = String()
+            status_msg.data = 'SYSTEM_WAITING'
+            self.status_pub.publish(status_msg)
+
+    def execute_task(self, task):
+        """Execute a high-level task using integrated subsystems"""
+        if self.system_state != 'READY':
+            self.get_logger().error('System not ready for task execution')
+            return False
+
+        # Add task to queue
+        self.task_queue.append(task)
+
+        # Process tasks in queue
+        while self.task_queue:
+            current_task = self.task_queue.popleft()
+            self.process_task(current_task)
+
+        return True
+
+    def process_task(self, task):
+        """Process individual tasks using appropriate subsystems"""
+        task_type = task.get('type', '')
+
+        if task_type == 'navigate':
+            self.execute_navigation_task(task)
+        elif task_type == 'manipulate':
+            self.execute_manipulation_task(task)
+        elif task_type == 'perceive':
+            self.execute_perception_task(task)
+        else:
+            self.get_logger().error(f'Unknown task type: {task_type}')
+
+    def execute_navigation_task(self, task):
+        """Execute navigation task using integrated systems"""
+        goal = task.get('goal', {})
+        self.get_logger().info(f'Executing navigation task to {goal}')
+
+        # Send navigation command
+        cmd_vel = Twist()
+        cmd_vel.linear.x = goal.get('linear_x', 0.0)
+        cmd_vel.angular.z = goal.get('angular_z', 0.0)
+        self.cmd_vel_pub.publish(cmd_vel)
+
+    def execute_manipulation_task(self, task):
+        """Execute manipulation task using integrated systems"""
+        joints = task.get('joints', {})
+        self.get_logger().info(f'Executing manipulation task with joints {joints}')
+
+        # Send joint commands
+        joint_cmd = JointState()
+        joint_cmd.name = list(joints.keys())
+        joint_cmd.position = list(joints.values())
+        self.joint_cmd_pub.publish(joint_cmd)
+
+    def execute_perception_task(self, task):
+        """Execute perception task using integrated systems"""
+        target = task.get('target', '')
+        self.get_logger().info(f'Executing perception task for {target}')
+
+        # Trigger perception system
+        perception_cmd = String()
+        perception_cmd.data = f'DETECT_{target.upper()}'
+        # Additional logic would go here to trigger perception subsystem
+
+def main(args=None):
+    rclpy.init(args=args)
+    integrator = SystemIntegrator()
+
+    try:
+        rclpy.spin(integrator)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        integrator.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+
+## System Monitoring
+
+Now let's implement a SystemMonitor class to track the health and performance of our integrated system:
+
+```python
+#!/usr/bin/env python3
+"""
+System Monitor for Physical AI
+Monitors system health, performance, and resource usage
+"""
+
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String, Float32
+from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
+from sensor_msgs.msg import BatteryState
+import psutil
+import time
+import threading
+from collections import deque
+import json
+
+class SystemMonitor(Node):
+    def __init__(self):
+        super().__init__('system_monitor')
+
+        # Publishers for monitoring data
+        self.diag_pub = self.create_publisher(DiagnosticArray, '/diagnostics', 10)
+        self.cpu_pub = self.create_publisher(Float32, '/system/cpu_usage', 10)
+        self.mem_pub = self.create_publisher(Float32, '/system/memory_usage', 10)
+        self.battery_pub = self.create_publisher(BatteryState, '/system/battery', 10)
+
+        # Monitoring timers
+        self.monitoring_timer = self.create_timer(2.0, self.monitor_system)
+        self.diag_timer = self.create_timer(5.0, self.publish_diagnostics)
+
+        # Performance tracking
+        self.cpu_history = deque(maxlen=50)
+        self.mem_history = deque(maxlen=50)
+        self.performance_threshold = 80.0  # Percentage threshold
+
+        # System status
+        self.system_status = 'OK'
+        self.last_update_time = time.time()
+
+        self.get_logger().info('System Monitor initialized')
+
+    def monitor_system(self):
+        """Monitor system resources and performance"""
+        current_time = time.time()
+
+        # Get CPU usage
+        cpu_percent = psutil.cpu_percent(interval=None)
+        self.cpu_history.append(cpu_percent)
+        cpu_msg = Float32()
+        cpu_msg.data = float(cpu_percent)
+        self.cpu_pub.publish(cpu_msg)
+
+        # Get memory usage
+        memory = psutil.virtual_memory()
+        mem_percent = memory.percent
+        self.mem_history.append(mem_percent)
+        mem_msg = Float32()
+        mem_msg.data = float(mem_percent)
+        self.mem_pub.publish(mem_msg)
+
+        # Check for performance issues
+        avg_cpu = sum(self.cpu_history) / len(self.cpu_history) if self.cpu_history else 0
+        avg_mem = sum(self.mem_history) / len(self.mem_history) if self.mem_history else 0
+
+        if avg_cpu > self.performance_threshold or avg_mem > self.performance_threshold:
+            self.system_status = 'WARNING'
+            self.get_logger().warn(f'High resource usage - CPU: {avg_cpu:.1f}%, Memory: {avg_mem:.1f}%')
+        else:
+            self.system_status = 'OK'
+
+        # Update last update time
+        self.last_update_time = current_time
+
+        self.get_logger().debug(f'System monitor - CPU: {cpu_percent:.1f}%, Memory: {mem_percent:.1f}%')
+
+    def publish_diagnostics(self):
+        """Publish diagnostic information"""
+        diag_array = DiagnosticArray()
+        diag_array.header.stamp = self.get_clock().now().to_msg()
+
+        # CPU diagnostic
+        cpu_diag = DiagnosticStatus()
+        cpu_diag.name = 'CPU Monitor'
+        cpu_diag.hardware_id = 'cpu0'
+        cpu_avg = sum(self.cpu_history) / len(self.cpu_history) if self.cpu_history else 0
+        cpu_diag.values.append({'key': 'CPU Usage (%)', 'value': f'{cpu_avg:.1f}'})
+
+        if cpu_avg > self.performance_threshold:
+            cpu_diag.level = DiagnosticStatus.WARN
+            cpu_diag.message = f'High CPU usage: {cpu_avg:.1f}%'
+        else:
+            cpu_diag.level = DiagnosticStatus.OK
+            cpu_diag.message = f'Normal CPU usage: {cpu_avg:.1f}%'
+
+        diag_array.status.append(cpu_diag)
+
+        # Memory diagnostic
+        mem_diag = DiagnosticStatus()
+        mem_diag.name = 'Memory Monitor'
+        mem_diag.hardware_id = 'memory'
+        mem_avg = sum(self.mem_history) / len(self.mem_history) if self.mem_history else 0
+        mem_diag.values.append({'key': 'Memory Usage (%)', 'value': f'{mem_avg:.1f}'})
+
+        if mem_avg > self.performance_threshold:
+            mem_diag.level = DiagnosticStatus.WARN
+            mem_diag.message = f'High memory usage: {mem_avg:.1f}%'
+        else:
+            mem_diag.level = DiagnosticStatus.OK
+            mem_diag.message = f'Normal memory usage: {mem_avg:.1f}%'
+
+        diag_array.status.append(mem_diag)
+
+        # System status diagnostic
+        sys_diag = DiagnosticStatus()
+        sys_diag.name = 'System Status'
+        sys_diag.hardware_id = 'system'
+        sys_diag.values.append({'key': 'Status', 'value': self.system_status})
+        sys_diag.values.append({'key': 'Last Update', 'value': f'{self.last_update_time:.0f}'})
+
+        if self.system_status == 'WARNING':
+            sys_diag.level = DiagnosticStatus.WARN
+            sys_diag.message = 'System experiencing high resource usage'
+        else:
+            sys_diag.level = DiagnosticStatus.OK
+            sys_diag.message = 'System operating normally'
+
+        diag_array.status.append(sys_diag)
+
+        self.diag_pub.publish(diag_array)
+        self.get_logger().debug(f'Published diagnostics - System status: {self.system_status}')
+
+    def get_system_health(self):
+        """Get overall system health status"""
+        return {
+            'status': self.system_status,
+            'cpu_usage': sum(self.cpu_history) / len(self.cpu_history) if self.cpu_history else 0,
+            'memory_usage': sum(self.mem_history) / len(self.mem_history) if self.mem_history else 0,
+            'last_update': self.last_update_time
+        }
+
+def main(args=None):
+    rclpy.init(args=args)
+    monitor = SystemMonitor()
+
+    try:
+        rclpy.spin(monitor)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        monitor.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+
+## Deployment Strategies
+
+Deployment of Physical AI systems requires careful consideration of hardware constraints, real-time performance requirements, and safety considerations. Here are key strategies:
+
+### Containerized Deployment with Docker
+
+For consistent deployment across different hardware platforms, containerization is essential:
+
+```dockerfile
+# Dockerfile for Physical AI System
+FROM ros:humble-ros-base-jammy
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-dev \
+    build-essential \
+    libeigen3-dev \
+    libopencv-dev \
+    libpcl-dev \
+    ros-humble-navigation2 \
+    ros-humble-nav2-bringup \
+    ros-humble-perception \
+    ros-humble-rosbridge-suite \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up workspace
+WORKDIR /workspace
+COPY . /workspace/src
+RUN source /opt/ros/humble/setup.bash && \
+    colcon build --packages-select physical_ai_system && \
+    rm -rf build/ src/ log/
+
+# Source ROS environment
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN echo "source /workspace/install/setup.bash" >> ~/.bashrc
+
+# Expose ports for ROS bridge
+EXPOSE 9090
+
+# Default command
+CMD ["bash", "-c", "source /opt/ros/humble/setup.bash && source /workspace/install/setup.bash && ros2 launch physical_ai_system system.launch.py"]
+```
+
+### Kubernetes for Multi-Robot Systems
+
+For managing fleets of robots, Kubernetes can orchestrate deployment and scaling:
+
+```yaml
+# deployment.yaml - Kubernetes deployment for Physical AI robots
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: physical-ai-robot
+  namespace: robotics
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: physical-ai-robot
+  template:
+    metadata:
+      labels:
+        app: physical-ai-robot
+    spec:
+      containers:
+      - name: robot-system
+        image: physical-ai-system:latest
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        env:
+        - name: ROBOT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ROS_DOMAIN_ID
+          value: "1"
+        volumeMounts:
+        - name: robot-data
+          mountPath: /data
+        - name: robot-config
+          mountPath: /config
+      volumes:
+      - name: robot-data
+        persistentVolumeClaim:
+          claimName: robot-data-pvc
+      - name: robot-config
+        configMap:
+          name: robot-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: robot-service
+  namespace: robotics
+spec:
+  selector:
+    app: physical-ai-robot
+  ports:
+  - port: 9090
+    targetPort: 9090
+  type: LoadBalancer
+```
+
+### Over-the-Air (OTA) Updates
+
+For remote system updates, implement a robust OTA update system:
+
+```python
+#!/usr/bin/env python3
+"""
+OTA Update Manager for Physical AI Systems
+Handles remote system updates with rollback capabilities
+"""
+
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String, Bool
+import requests
+import hashlib
+import subprocess
+import os
+import shutil
+from threading import Thread
+
+class OTAUpdateManager(Node):
+    def __init__(self):
+        super().__init__('ota_update_manager')
+
+        self.update_status_pub = self.create_publisher(String, '/ota/status', 10)
+        self.update_available_sub = self.create_subscription(
+            String, '/ota/check', self.check_for_updates, 10)
+
+        # Configuration
+        self.update_server_url = "https://updates.physical-ai.example.com"
+        self.current_version = "1.0.0"
+        self.backup_path = "/backup"
+
+        self.get_logger().info('OTA Update Manager initialized')
+
+    def check_for_updates(self, msg):
+        """Check for available updates"""
+        try:
+            response = requests.get(f"{self.update_server_url}/latest_version")
+            latest_version = response.json().get('version', '')
+
+            if self.compare_versions(latest_version, self.current_version) > 0:
+                self.get_logger().info(f'Update available: {latest_version}')
+                self.download_update(latest_version)
+            else:
+                self.get_logger().info('System is up to date')
+
+        except Exception as e:
+            self.get_logger().error(f'Error checking for updates: {e}')
+
+    def download_update(self, version):
+        """Download update package"""
+        try:
+            url = f"{self.update_server_url}/packages/{version}.tar.gz"
+            response = requests.get(url, stream=True)
+
+            update_file = f"/tmp/update_{version}.tar.gz"
+            with open(update_file, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+
+            # Verify checksum
+            checksum = self.calculate_checksum(update_file)
+            expected_checksum = self.get_expected_checksum(version)
+
+            if checksum == expected_checksum:
+                self.get_logger().info(f'Update {version} downloaded and verified')
+                self.install_update(update_file, version)
+            else:
+                self.get_logger().error('Checksum verification failed')
+
+        except Exception as e:
+            self.get_logger().error(f'Error downloading update: {e}')
+
+    def install_update(self, update_file, version):
+        """Install the downloaded update"""
+        try:
+            # Create backup of current system
+            self.create_backup()
+
+            # Extract update
+            update_dir = f"/tmp/update_{version}"
+            os.makedirs(update_dir, exist_ok=True)
+            subprocess.run(['tar', '-xzf', update_file, '-C', update_dir])
+
+            # Stop current system
+            self.stop_system()
+
+            # Apply update
+            self.apply_update(update_dir)
+
+            # Verify update
+            if self.verify_update(version):
+                self.get_logger().info(f'Update {version} installed successfully')
+                self.current_version = version
+                self.cleanup(update_file, update_dir)
+            else:
+                self.get_logger().error('Update verification failed - rolling back')
+                self.rollback_update()
+
+        except Exception as e:
+            self.get_logger().error(f'Error installing update: {e}')
+            self.rollback_update()
+
+    def create_backup(self):
+        """Create backup of current system"""
+        try:
+            if os.path.exists(self.backup_path):
+                shutil.rmtree(self.backup_path)
+            shutil.copytree('/workspace/install', f'{self.backup_path}/install')
+            self.get_logger().info('Backup created successfully')
+        except Exception as e:
+            self.get_logger().error(f'Error creating backup: {e}')
+
+    def stop_system(self):
+        """Stop the current system"""
+        try:
+            subprocess.run(['systemctl', 'stop', 'physical-ai-system'], check=True)
+            self.get_logger().info('System stopped for update')
+        except subprocess.CalledProcessError:
+            self.get_logger().warn('Failed to stop system service')
+
+    def apply_update(self, update_dir):
+        """Apply the update files"""
+        try:
+            # Copy new files
+            shutil.rmtree('/workspace/install')
+            shutil.copytree(f'{update_dir}/install', '/workspace/install')
+            self.get_logger().info('Update applied successfully')
+        except Exception as e:
+            self.get_logger().error(f'Error applying update: {e}')
+
+    def verify_update(self, version):
+        """Verify that the update was applied correctly"""
+        try:
+            # Check version file
+            version_file = '/workspace/install/share/physical_ai_system/version.txt'
+            if os.path.exists(version_file):
+                with open(version_file, 'r') as f:
+                    installed_version = f.read().strip()
+                return installed_version == version
+            return False
+        except Exception:
+            return False
+
+    def rollback_update(self):
+        """Rollback to previous version"""
+        try:
+            if os.path.exists(f'{self.backup_path}/install'):
+                shutil.rmtree('/workspace/install')
+                shutil.copytree(f'{self.backup_path}/install', '/workspace/install')
+                self.get_logger().info('Update rolled back successfully')
+            else:
+                self.get_logger().error('No backup available for rollback')
+        except Exception as e:
+            self.get_logger().error(f'Error during rollback: {e}')
+
+    def cleanup(self, update_file, update_dir):
+        """Clean up temporary files"""
+        try:
+            os.remove(update_file)
+            shutil.rmtree(update_dir)
+            self.get_logger().info('Cleanup completed')
+        except Exception as e:
+            self.get_logger().warn(f'Error during cleanup: {e}')
+
+    def compare_versions(self, v1, v2):
+        """Compare two version strings"""
+        def normalize(v):
+            return [int(x) for x in v.split(".")]
+
+        n1, n2 = normalize(v1), normalize(v2)
+        return (n1 > n2) - (n1 < n2)
+
+    def calculate_checksum(self, file_path):
+        """Calculate MD5 checksum of file"""
+        hash_md5 = hashlib.md5()
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
+
+    def get_expected_checksum(self, version):
+        """Get expected checksum from server"""
+        try:
+            response = requests.get(f"{self.update_server_url}/checksums/{version}")
+            return response.json().get('checksum', '')
+        except Exception as e:
+            self.get_logger().error(f'Error getting checksum: {e}')
+            return ''
+
+def main(args=None):
+    rclpy.init(args=args)
+    updater = OTAUpdateManager()
+
+    try:
+        rclpy.spin(updater)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        updater.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+
+## Key Terms
+
+- **System Integration**: The process of combining individual subsystems into a unified system
+- **Deployment**: The process of installing and configuring software on target hardware
+- **OTA Updates**: Over-the-air updates that can be pushed remotely to deployed systems
+- **System Monitoring**: Continuous tracking of system health and performance metrics
+- **Containerization**: Packaging software and its dependencies into lightweight, portable containers
+- **Orchestration**: Managing and coordinating multiple distributed systems or containers
+
+## Learning Checkpoints
+
+1. Implement a system integrator that coordinates between perception, planning, and control systems
+2. Create a monitoring system that tracks CPU, memory, and system health
+3. Design a deployment strategy using containers for consistent system deployment
+4. Implement OTA update capabilities with rollback functionality
+
+## Summary
+
+Week 12 covered the critical aspects of integrating multiple robotics subsystems into a cohesive system and deploying those systems in real-world environments. We explored system integration patterns, monitoring solutions, and deployment strategies including containerization and OTA updates. These skills are essential for building robust, maintainable Physical AI systems that can operate reliably in production environments.
